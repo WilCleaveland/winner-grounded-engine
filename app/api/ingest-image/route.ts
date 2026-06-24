@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { extractCreativeFromImage, type ImageMediaType } from '@/lib/anthropic';
+import { rateLimited } from '@/lib/ratelimit';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -13,6 +14,10 @@ const OK: ImageMediaType[] = [
 
 export async function POST(req: Request) {
   try {
+    // A paid vision call — cap it like the other single-call routes.
+    const limited = rateLimited(req, 'img', 24, 10 * 60_000);
+    if (limited) return limited;
+
     const { image, mediaType } = (await req.json()) as {
       image?: string;
       mediaType?: string;

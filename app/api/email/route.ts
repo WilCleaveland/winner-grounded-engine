@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { generateEmail } from '@/lib/anthropic';
 import { composeVoice } from '@/lib/voice';
+import { rateLimited } from '@/lib/ratelimit';
 import type { EmailRequest } from '@/lib/types';
 
 export const runtime = 'nodejs';
@@ -8,6 +9,10 @@ export const maxDuration = 120;
 
 export async function POST(req: Request) {
   try {
+    // A single Claude call; looser cap than generate, still abuse-proof.
+    const limited = rateLimited(req, 'email', 24, 10 * 60_000);
+    if (limited) return limited;
+
     const body = (await req.json()) as EmailRequest;
 
     if (!body?.hook?.trim()) {

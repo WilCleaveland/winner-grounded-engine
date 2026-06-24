@@ -7,6 +7,7 @@ import {
 } from '@/lib/anthropic';
 import { scrapeSalesPage } from '@/lib/scrape';
 import { composeVoice } from '@/lib/voice';
+import { rateLimited } from '@/lib/ratelimit';
 import { MOCK_RESULT } from '@/data/mockResult';
 import type { GenerateRequest } from '@/lib/types';
 
@@ -17,6 +18,10 @@ type GenerateBody = GenerateRequest & { salesPageUrl?: string };
 
 export async function POST(req: Request) {
   try {
+    // The expensive path (Firecrawl + ~4 Claude calls). Cap it hardest.
+    const limited = rateLimited(req, 'gen', 8, 10 * 60_000);
+    if (limited) return limited;
+
     const body = (await req.json()) as GenerateBody;
 
     if (!body?.offer?.trim()) {
