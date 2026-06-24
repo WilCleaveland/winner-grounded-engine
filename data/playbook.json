@@ -1,0 +1,459 @@
+{
+  "levers": [
+    {
+      "name": "The unpassable self-diagnostic hook",
+      "category": "pattern-interrupt",
+      "type": "do",
+      "pattern": "Open by handing the reader a concrete test or checklist they realize they cannot pass in their head. The felt gap does the selling before any product appears — the reader experiences the deficiency themselves rather than being told about it.",
+      "genericExample": "Subject: Name 3 things you could do from scratch right now (most people freeze) — and that's exactly the gap."
+    },
+    {
+      "name": "Name the inconvenient truth the buyer half-suspects",
+      "category": "contrarian",
+      "type": "do",
+      "pattern": "State out loud the doubt the reader already carries but hasn't admitted, then reframe their existing 'proof of competence' as not actually counting. This converts unearned confidence into felt urgency.",
+      "genericExample": "Subject: You've read 12 books on this — and you still freeze when it counts. Owning the tools isn't the same as running the system under pressure."
+    },
+    {
+      "name": "Always give a plausible 'reason why' for the deal",
+      "category": "proof",
+      "type": "do",
+      "pattern": "Never let a giveaway, discount, or 'you've been selected' frame float unexplained. Anchor it to a believable cause — a deadline, supply pressure, a milestone, loyalty, the seller's own honest motive — placed before or with the offer reveal, never after. An unexplained deal smells like a catch and triggers skepticism; a stated reason makes it feel earned and drops the reader's guard. The reason must be plausibly true, never a fabricated checkable claim.",
+      "genericExample": "Subject: We over-ordered for the season, so the next 200 people get the starter kit at cost — here's exactly why."
+    },
+    {
+      "name": "Specificity as proof",
+      "category": "proof",
+      "type": "do",
+      "pattern": "Use concrete numbers, named components, exact steps, and real anchors instead of round generalities. Granular detail signals insider knowledge and makes the claim credible to an informed audience — vague copy reads as a stranger guessing.",
+      "genericExample": "Subject: The 4mm angle change that makes it glide instead of crush — and the 14-step edge we put on every unit."
+    },
+    {
+      "name": "Dismissive-label paradox",
+      "category": "curiosity",
+      "type": "do",
+      "pattern": "Lead with a quoted, belittling label for the thing you're selling ('toy,' 'cheap,' 'boring'), then pay it off with serious, high-stakes value. The contradiction between the throwaway label and the real payoff opens a curiosity gap that travels across many framings (cost, capability, crisis-utility). Keep the dismissive label in quotes in the hook.",
+      "genericExample": "Subject: Why pros reach for this 'boring' $9 tool when everything else in the room fails."
+    },
+    {
+      "name": "Re-skin a proven winner for a new emotional register",
+      "category": "mechanism-reveal",
+      "type": "do",
+      "pattern": "When a hook wins, don't retire it — re-skin the identical underlying mechanism into a different frame (news-curiosity to crisis-utility to cost to capability). The core paradox or tension is the durable asset; the surface peg is swappable, so one winner spawns a family of fresh sends.",
+      "genericExample": "A sleep win first framed as 'the bedtime mistake keeping you up' can re-lead as 'what your 3am wake-ups are actually costing you' — same mechanism, new register."
+    },
+    {
+      "name": "The honest self-incrimination / cannibalization confession",
+      "category": "contrarian",
+      "type": "do",
+      "pattern": "Voice the reader's own objection as the hook ('why would I possibly do this, it hurts me?'), then make the answer to that objection the offer's justification. Volunteering the catch first earns trust the moment it's read, so opens convert to clicks instead of bouncing. Reads as candor, not pitch.",
+      "genericExample": "Subject: Why I'm telling you the cheaper option is fine for most people — the honest reason I'd rather lose this sale."
+    },
+    {
+      "name": "Tie the offer to a timely external peg with personal stakes",
+      "category": "urgency",
+      "type": "do",
+      "pattern": "Attach the send to a concrete, current external development and make it personally relevant with a parenthetical stake-raiser aimed at exactly the people who should care. The peg supplies the 'why now'; the stakes line filters and pulls the right reader in. Refresh the peg on every recycle.",
+      "genericExample": "Subject: New rate change next month (urgent if you carry any balance) — what it quietly does to your monthly payment."
+    },
+    {
+      "name": "Anchor a low-ticket offer against a high-ticket reference",
+      "category": "proof",
+      "type": "do",
+      "pattern": "Place the low price next to a much larger, credible number the audience already respects (a premium version, a real-world cost they know). The contrast makes the actual ask feel trivial and the value obvious without arguing about price.",
+      "genericExample": "Subject: The same method from the $2,000 immersion — for the price of one textbook."
+    },
+    {
+      "name": "Risk reversal stacked with scarcity",
+      "category": "urgency",
+      "type": "do",
+      "pattern": "Pair a strong no-questions guarantee (removes the downside) with a genuine cap on availability (adds urgency). The guarantee dissolves the reason to hesitate; the scarcity removes the reason to delay — together they close the gap between interest and action.",
+      "genericExample": "Subject: 60-day full refund, no questions — but only the first 100 spots get founder pricing."
+    },
+    {
+      "name": "Order-already-in-motion frame",
+      "category": "pattern-interrupt",
+      "type": "do",
+      "pattern": "Write the subject as a transactional notification about something already happening to the reader — a shipment in transit, an order confirmed, a hold on their account — so it reads like operational mail, not marketing. The implied prior commitment compels the open. Land on a real fulfillment event, never a fabricated tracking number.",
+      "genericExample": "Subject: Your kit is on its way (signature needed at the door)"
+    },
+    {
+      "name": "Named item + dollar-value giveaway",
+      "category": "loss-aversion",
+      "type": "do",
+      "pattern": "State the exact product and its concrete retail price, then imply the reader has already been selected to receive it free. The specificity and the price tag do the persuading — it reads as a claim to collect, not a contest to enter. Pair with a body that converts; these open far better than they click.",
+      "genericExample": "Subject: Your free $129 starter set is reserved (just need your address)"
+    },
+    {
+      "name": "Specific official artifact as proof of threat",
+      "category": "loss-aversion",
+      "type": "do",
+      "pattern": "Name a precise document, form number, procedure, or authority instead of gesturing at a vague fear. The exactness makes the threat believable and the open irresistible; generic 'they're watching' loses, the named artifact wins.",
+      "genericExample": "Subject: Why one line on last year's paperwork could cost you more than you think"
+    },
+    {
+      "name": "Second-person present-tense danger scene",
+      "category": "future-pacing",
+      "type": "do",
+      "pattern": "Drop the reader inside a vivid, unfolding moment of loss or risk in the present tense, then position the product as the immediate answer. The reader lives the scenario before they see the pitch.",
+      "genericExample": "Subject: It's 2am, you're wide awake again, and the alarm is in four hours — do this"
+    },
+    {
+      "name": "Forbidden-knowledge / loophole frame",
+      "category": "curiosity",
+      "type": "do",
+      "pattern": "Frame the offer as something almost-not-allowed — a workaround, a suppressed method, the thing the gatekeepers would rather you didn't have. Taboo creates pull. Keep the 'they don't want you to know' feel without literally claiming anything illegal.",
+      "genericExample": "Subject: The pricing trick stores quietly hope you never learn"
+    },
+    {
+      "name": "Name the tribe's enemy + insider aside",
+      "category": "identity",
+      "type": "do",
+      "pattern": "Invoke a threat to the reader's in-group from a named adversary or authority, in a lowercase, conspiratorial insider tone (a parenthetical 'fair warning'). A trusted authority 'finally admitting' something travels especially far.",
+      "genericExample": "Subject: the experts finally admitted this on camera (heads up)"
+    },
+    {
+      "name": "Pure curiosity gap — withhold the subject",
+      "category": "curiosity",
+      "type": "do",
+      "pattern": "Use a 2–4 word incomplete thought that names no product and resolves nothing, forcing the body to pay it off. Opens enormously. ONLY safe when the body actually delivers the resolution — pair with strict do-not-overpromise discipline.",
+      "genericExample": "Subject: worse than burnout"
+    },
+    {
+      "name": "One-line capability demo + scarcity",
+      "category": "mechanism-reveal",
+      "type": "do",
+      "pattern": "Lead with the single most visual, almost-unbelievable thing the product does, stated as a concrete demonstration, then stack 'back in stock' / 'limited inventory'. The vivid demo earns the click; the scarcity times it.",
+      "genericExample": "Subject: the $19 pan that cleans itself is back (last batch)"
+    },
+    {
+      "name": "Personalization token in the subject",
+      "category": "pattern-interrupt",
+      "type": "do",
+      "pattern": "Place a first-name or email merge token directly in the subject so it reads personal and transactional, spiking opens. Strongest fused onto a giveaway or shipment frame rather than used alone.",
+      "genericExample": "Subject: [First name], your sample box shipped this morning"
+    },
+    {
+      "name": "The parenthetical close",
+      "category": "urgency",
+      "type": "do",
+      "pattern": "End the subject with a short parenthetical that adds the action cue or the scarcity — '(just need your address)', '(ends at midnight)', '(heads up)'. The hook lands first; the paren supplies the reason to move now. Free plus a deadline beats free alone.",
+      "genericExample": "Subject: Your starter kit is ready (claim by midnight)"
+    },
+    {
+      "name": "Random-draw 'you were picked' frame",
+      "category": "status",
+      "type": "do",
+      "pattern": "Tell the reader their name 'came up' or they were selected to receive something — a drawing they didn't enter. Reliably one of the highest open-rate frames because it reads as a personal claim. Open-magnet only: state the actual prize concretely and pair with a body that converts, since these open far better than they click.",
+      "genericExample": "Subject: Your name came up for this month's free box"
+    },
+    {
+      "name": "Concrete news-peg → offer pivot",
+      "category": "urgency",
+      "type": "do",
+      "pattern": "Lead on a real, fresh, datable event — a ruling, a policy shift, an announcement — that the audience already cares about, then pivot to the offer as the response. The factual peg earns editorial trust and the click; vague topicality does not. Refresh the peg on every recycle.",
+      "genericExample": "Subject: New rule quietly changes these 3 everyday costs — here's what to do now"
+    },
+    {
+      "name": "Guess-who gap + misdirecting preheader",
+      "category": "curiosity",
+      "type": "do",
+      "pattern": "Open a 'guess who just did X' curiosity gap around a figure or brand the reader knows, then use the preheader to RULE OUT the obvious answer rather than resolve it — deepening the gap instead of closing it. The 'now' implies an ongoing pattern.",
+      "genericExample": "Subject: Guess who just raised prices again — and it isn't who you think"
+    },
+    {
+      "name": "Two-sided 'bad news / good news' blind hook",
+      "category": "contrarian",
+      "type": "do",
+      "pattern": "Promise both a downside and an upside without revealing either in the subject. The honesty signal (admitting something costs you) buys credibility; the unresolved good news pulls the open. Works as an honest-confession reframe of a tired offer.",
+      "genericExample": "Subject: Bad news and good news about your subscription"
+    },
+    {
+      "name": "Negation / don't-do-this headline",
+      "category": "loss-aversion",
+      "type": "do",
+      "pattern": "Open with a prohibition instead of a recommendation. Naming what the reader must AVOID outperforms naming what to choose, because it threatens a mistake they may already be making and forces a self-audit ('do I do this?'). Loss-framing beats gain-framing for the click.",
+      "genericExample": "Subject: Do NOT store these like this (it's quietly ruining them)"
+    },
+    {
+      "name": "Open-question title, verdict withheld",
+      "category": "curiosity",
+      "type": "do",
+      "pattern": "Frame the title as the exact question the reader is already silently asking, then withhold the answer. The unresolved question is the curiosity gap; the only way to close it is to read. Works best on perennial debates where the audience is already split.",
+      "genericExample": "Title: Which approach is actually best?"
+    },
+    {
+      "name": "Numbered superlative listicle",
+      "category": "curiosity",
+      "type": "do",
+      "pattern": "Combine a small fixed count with an absolute superlative ('5 Unbeatable…', 'BEST…'). The number promises a finite, scannable payload; the superlative promises these are THE definitive picks. Specificity of count plus boldness of claim equals credibility plus curiosity. A durable, endlessly recyclable workhorse — extends to 'N hidden reasons/advantages' for a curiosity layer.",
+      "genericExample": "Title: 5 unbeatable picks under $80 (and 1 to avoid)"
+    },
+    {
+      "name": "Stakes-escalation intro (mundane topic → life consequence)",
+      "category": "future-pacing",
+      "type": "do",
+      "pattern": "In the first 2–3 short paragraphs, reframe a small, dry decision as something with outsized downstream consequences — safety, money, irreversible loss. Raise the stakes BEFORE delivering any information, so the reader feels they can't afford to skim. Earn the right to the body by making the topic matter.",
+      "genericExample": "Picking the wrong one isn't just a comfort issue. It's eight hours a night, every night, quietly deciding how sharp you are the next day."
+    },
+    {
+      "name": "Named enemy / out-group framing",
+      "category": "identity",
+      "type": "do",
+      "pattern": "Name a villain the audience already resents — the meddling authority, the people 'just trying to sell you something,' the crowd that mocks the reader's caution. Positioning the offer as the reader's ally against a shared enemy converts identity and grievance into attention. Extends to the betrayed-trust takedown: build the halo of a 'most trusted' incumbent, then reveal it quietly failing the customer, and position your offer as the honest alternative.",
+      "genericExample": "Subject: The industry would rather you never learn this one cheap fix."
+    },
+    {
+      "name": "Borrowed authority via block quote",
+      "category": "social-proof",
+      "type": "do",
+      "pattern": "Anchor the central claim in a large verbatim quote from a credentialed outside expert, then add light first-person commentary that frames and editorializes. The expert carries the credibility load and lets a thin-resourced publisher punch above its weight without inventing claims. The commentary must add a real take — never just bookend the quote with empty 'interesting stuff.'",
+      "genericExample": "A 30-year veteran put it bluntly: [quote]. He's right — and most people ignore every word of it."
+    },
+    {
+      "name": "Named insider authority + geographic specificity",
+      "category": "social-proof",
+      "type": "do",
+      "pattern": "Attribute the method to a specific, slightly mysterious expert with a concrete location and credential ('a guy in [place],' decades in the field, builds for elite buyers). Specific, almost-too-mundane detail makes the claim credible where a generic 'experts say' would not. The authority knows a secret the reader doesn't.",
+      "genericExample": "Subject: How the top tier gets results this good. Open: A lot of them quietly ship their work to one retired specialist in a rural town. He's done it for 40 years."
+    },
+    {
+      "name": "Earned-standing first person",
+      "category": "proof",
+      "type": "do",
+      "pattern": "Briefly establish hands-on, dues-paid experience ('after a decade of…,' 'having run both for years…') before giving an opinion. The credential is stated as lived experience, not a title, so the verdict reads as battle-tested rather than theoretical. Trust transfers from the doing.",
+      "genericExample": "Having run this and three competitors daily for two years, let me save you the trial and error."
+    },
+    {
+      "name": "Honest pros-AND-cons frame",
+      "category": "proof",
+      "type": "do",
+      "pattern": "Promise a balanced verdict ('Pros and Cons of…') and actually deliver drawbacks, including ones the seller usually hides. The visible willingness to name downsides buys trust a pure pitch can't, which makes the eventual recommendation land harder. Even-handedness is the persuasion device.",
+      "genericExample": "Title: The real pros and cons (including the ones nobody warns you about)"
+    },
+    {
+      "name": "Budget / value hook",
+      "category": "loss-aversion",
+      "type": "do",
+      "pattern": "Lead with the reader's wallet under pressure (inflation, tight money, getting ripped off), promise quality-without-overpaying, and pin it to a concrete price point for credibility. Frames the purchase as smart defense of limited resources, not indulgence.",
+      "genericExample": "Title: Best budget pick that doesn't feel cheap (under $200)"
+    },
+    {
+      "name": "News-jack with identity stakes and a twist",
+      "category": "identity",
+      "type": "do",
+      "pattern": "Tie a current, verifiable event to a 'why this matters to YOU' frame, with a surprise twist in the headline (an unexpected actor or outcome). The news supplies freshness and a reason to open now; the twist supplies curiosity; the identity stakes supply relevance.",
+      "genericExample": "Title: A top expert just quit the thing he's famous for — here's why that should worry you"
+    },
+    {
+      "name": "Cognitive-trap reframe ('you think X, but…')",
+      "category": "contrarian",
+      "type": "do",
+      "pattern": "Name a comfortable assumption the reader holds, then reveal it as the exact trap that hurts people like them. The hook is the gap between what feels obviously true and what is actually true; the reader keeps reading to find out if they're the one making the error. Extends to the betrayed-confidence reframe: take a source of pride and expose it as a false signal.",
+      "genericExample": "Subject: You assume the thing you reuse everywhere is your safest. That assumption is exactly how people like you get burned."
+    },
+    {
+      "name": "Singular-mistake / one-thing fixation",
+      "category": "mechanism-reveal",
+      "type": "do",
+      "pattern": "Isolate a SINGLE specific error, part, step, or setting and attach a severe consequence or an instant high-leverage win ('1 mistake that costs you everything,' 'the one setting silently wrecking this'). 'One' makes it feel learnable and fixable in minutes; the stakes make it urgent; it seeds doubt about what they already own. Narrow scope plus high stakes is the whole engine — endlessly re-skinnable.",
+      "genericExample": "Subject: This one setting is silently wrecking your results — here's the 10-second fix."
+    },
+    {
+      "name": "Story-tension cold open",
+      "category": "pattern-interrupt",
+      "type": "do",
+      "pattern": "Open mid-emotion with no setup — a confession, an unresolved irritation, or a dramatic in-progress scene. Skip the product entirely up front to pull the reader into a narrative, banking attention before any pitch. Pattern-interrupts the expected 'here's my offer' open.",
+      "genericExample": "Subject: I almost quit over this. Open: He was sure he'd nailed it. He hadn't even started the real work. Watching that happen again is what pushed me to build this."
+    },
+    {
+      "name": "Forbidden / soon-to-be-removed scarcity",
+      "category": "urgency",
+      "type": "do",
+      "pattern": "Frame the offer as something the seller may be FORCED to pull — legal pressure, a complaint, a policy change ('last chance,' 'emergency clear-out,' 'before they make me stop'). Combines a forbidden-knowledge curiosity gap with hard scarcity and an implied authority-as-enemy. The reason for the discount is baked into the threat.",
+      "genericExample": "Subject: Forced to take this down soon. Open: A complaint means I may have to pull my guide for good — so I'm discounting it 50% as an emergency clear-out before that happens."
+    },
+    {
+      "name": "You-were-selected prize frame (reward, then deadline)",
+      "category": "status",
+      "type": "do",
+      "pattern": "Tell the reader THEY specifically were chosen (personalize with their own identifier), reveal the concrete prize immediately, then clamp a short reservation window ('held 24 hours, then it goes to the next winner'). Status plus concrete reward plus scarcity. Critical: state the actual prize — do not tease the mechanism.",
+      "genericExample": "Subject: Congrats — you were picked. Open: Your address was randomly selected for today's giveaway. Your prize: a free premium kit. We can hold it 24 hours before it passes to the next winner."
+    },
+    {
+      "name": "Conversational soft close + reader question",
+      "category": "social-proof",
+      "type": "do",
+      "pattern": "End not with a hard sell but a takeaway plus a direct question inviting the reader to weigh in ('What do you use? Tell us below.'). The question signals you value the reader's view, lifts engagement, and keeps the tone peer-to-peer rather than salesy. The CTA is participation, not purchase.",
+      "genericExample": "That's my pick after a year of testing. What's worked for you — and what would you swap in? Tell me below."
+    },
+    {
+      "name": "Plain over clever — say the thing",
+      "category": "craft",
+      "type": "do",
+      "pattern": "Strip ornament and lead with the literal claim. Clarity reads as confidence; cleverness reads as a writer trying to impress. The reader trusts a sentence that states the point directly far more than a stylized one that makes them decode it. Cut the throat-clearing wind-up and open on the assertion itself.",
+      "genericExample": "Yours is dull. This one stays sharp for a year. (Not 'imagine never struggling again.')"
+    },
+    {
+      "name": "Specific numbers beat adjectives",
+      "category": "craft",
+      "type": "do",
+      "pattern": "Replace every vague intensifier with a concrete figure. A number is falsifiable and therefore credible; an adjective is just opinion. The quantified version makes the same promise but earns belief.",
+      "genericExample": "Cut your nightly routine to 10 minutes — not 'do it faster.'"
+    },
+    {
+      "name": "Short sentences carry the weight",
+      "category": "craft",
+      "type": "do",
+      "pattern": "Let one idea land before the next begins. Clip the rhythm so each claim has room to register. Punchy, declarative cadence drives momentum and keeps the reader moving down the page.",
+      "genericExample": "Open it. Pick one. You're using it tonight."
+    },
+    {
+      "name": "Frame the reader's end as effortless",
+      "category": "craft",
+      "type": "do",
+      "pattern": "The product does the hard part; the reader only says yes, shows up, or claims it. Ban effort-words (learn, master, figure out, study, put in the work) and swap in light-touch verbs (get, discover, it's handled, shows up at your door). Anything that reads as homework lowers response.",
+      "genericExample": "We did the hard part for you — it shows up ready to go, already sorted."
+    },
+    {
+      "name": "Method / 'secret' curiosity hook",
+      "category": "mechanism-reveal",
+      "type": "do",
+      "pattern": "Build the hook on a withheld method: the secret, here's how, the thing top performers do. Opens a curiosity gap and borrows the authority of an expert in-group, so the reader clicks to close the loop and get on the inside.",
+      "genericExample": "Subject: The one prep step the best never skip."
+    },
+    {
+      "name": "Conversational selling — one person to one person",
+      "category": "craft",
+      "type": "do",
+      "pattern": "For story or personality-led formats, write like a real person talking to a single reader: one idea, a story or voice carrying it, soft-selling into the offer. Beats generic promo language because it earns attention before it asks for the click. Drifting toward broadcast-promo tone measurably flattens response.",
+      "genericExample": "I almost returned it after a week. Then I noticed the difference. Here's what changed."
+    },
+    {
+      "name": "Read clicks and conversions, not opens, as the real signal",
+      "category": "measurement",
+      "type": "avoid",
+      "pattern": "A strong open or subject-line curiosity gap means nothing if the body doesn't pay it off. Judge a hook by whether it drives the downstream action and converts. A high-open, low-click result is a curiosity gap that wrote a check the body couldn't cash — measure the click, not the open.",
+      "genericExample": "A subject like 'the one setting secretly draining your battery' can spike opens but flop on clicks if the reveal underdelivers."
+    },
+    {
+      "name": "Curiosity gap the body can't pay off",
+      "category": "curiosity",
+      "type": "avoid",
+      "pattern": "A subject built purely on intrigue or a provocative claim earns the open but punishes you if the content can't deliver. The wider the gap, the harder the crater on clicks and conversions — the reader feels baited and bounces. The gap must be honest; bait that doesn't resolve trains the audience to stop clicking. If you swipe a wide-gap line, use it only on a body that fully resolves it.",
+      "genericExample": "Subject: This common habit is silently destroying your sleep — opened by everyone, clicked by no one when the payoff is a shrug."
+    },
+    {
+      "name": "Stale or fabricated reason-for-the-deal peg",
+      "category": "proof",
+      "type": "avoid",
+      "pattern": "The 'reason why' must be plausible and current. A peg that's clearly out of date, or an invented specific fact-claim about an event, actively hurts credibility and underperforms a generic-but-true one. Refresh the reason on every recycle and prefer true-but-general causes ('seasonal demand is climbing') over specific invented ones.",
+      "genericExample": "Citing a long-resolved event as today's reason, or inventing a precise statistic, reads as lazy or dishonest and tanks trust."
+    },
+    {
+      "name": "Soft-awareness register on a skill-gap offer",
+      "category": "mechanism-reveal",
+      "type": "avoid",
+      "pattern": "When the offer's power comes from a felt competence gap and urgency, a gentle, status-or-aspiration framing kills it — wrong emotional register. Match the frame to the engine: urgency offers need the gap made vivid, not soothed.",
+      "genericExample": "Selling an urgency-driven skills course with a calm 'imagine your best, most capable self' drains the very tension that makes the buyer act."
+    },
+    {
+      "name": "Teasing the mechanism when the prize is the news",
+      "category": "curiosity",
+      "type": "avoid",
+      "pattern": "On reward, selection, or giveaway angles where the payoff itself is the hook, an open-loop curiosity tease underperforms a direct statement of the win. When the reader's reward IS the news, naming it concretely beats hiding it behind a gap — curiosity only helps when the payoff is information, not a prize.",
+      "genericExample": "Avoid: 'Good news — your name came up.' Prefer: 'You qualified for 3 free months.'"
+    },
+    {
+      "name": "Vague framing that pattern-matches to a scam",
+      "category": "proof",
+      "type": "avoid",
+      "pattern": "A hook so unspecific that it resembles spam, phishing, or a sweepstakes scam erodes trust and spikes complaints. Ambiguity that reads as 'too good / who is this' makes part of the list flag it as fraudulent rather than open it. Concrete, plausible specifics inoculate against the phishing smell.",
+      "genericExample": "Avoid: 'You've been selected today.' Prefer: 'Your 14-day trial is ready in your account.'"
+    },
+    {
+      "name": "High-shed plus low-pull is the kill signal",
+      "category": "measurement",
+      "type": "avoid",
+      "pattern": "A hook that drives unsubscribes above baseline while clicks land below baseline is the kill signal — it costs list health AND gets nothing for it. Aggression is only justified when it over-pulls; aggression that sheds subscribers without lifting response is a pure loss. Judge a hook on the shed-vs-pull combination, not either metric alone.",
+      "genericExample": "A confrontational, accusatory hook that offends openers into unsubscribing while underperforming on clicks — burning the list with nothing to show."
+    },
+    {
+      "name": "Blaming the asset for an environment effect",
+      "category": "measurement",
+      "type": "avoid",
+      "pattern": "When a previously-proven hook underperforms, check surrounding conditions before retiring it. A spike in unsubs or a dip in response during a list-wide stress period (over-mailing, deliverability dip, seasonal fatigue) is a confounded data point, not a verdict on the copy. Killing proven copy on a single environment-tainted result destroys winners by mistake; require a second, clean-condition occurrence before ruling.",
+      "genericExample": "A proven hook posts weak numbers the same week the list got mailed daily — the cadence is the suspect, not the copy. Re-test it in a normal week before declaring it dead."
+    },
+    {
+      "name": "Over-cadence / volume burn",
+      "category": "measurement",
+      "type": "avoid",
+      "pattern": "A distinct failure mode from copy: sending too hard over a compressed window drives list-wide unsubscribe and complaint spikes that sink even proven, previously-winning copy. When a known-good email suddenly sheds subscribers, suspect send frequency and weekly volume first. Space sends, cap touches per day, and protect deliverability; don't retire good copy for a cadence problem.",
+      "genericExample": "Emailing the same segment a hard pitch every day for a week can make a proven welcome email post 2x normal unsubscribes purely from fatigue."
+    },
+    {
+      "name": "Judging a send on a confounded or stale comparison",
+      "category": "measurement",
+      "type": "avoid",
+      "pattern": "Declaring a hook a winner or loser by comparing it against a control from a different measurement era, a suppression-policy change, or a mid-delivery data snapshot produces false verdicts. Inflated opens or a half-delivered volume will lie to you. Verify the data is complete and era-matched before promoting or killing a mechanism.",
+      "genericExample": "A subject 'beat' last period's by 30% opens — so it got scaled even though it actually lost on clicks."
+    },
+    {
+      "name": "All-caps screaming + empty cliffhanger bait",
+      "category": "curiosity",
+      "type": "avoid",
+      "pattern": "Manufactured outrage in shouting capitals plus a content-free curiosity tease ('…and you'll never guess what happens next'). It over-promises a payoff the body can't deliver, trains the audience to distrust the headline, and reads as low-grade clickbait — high open, fast credibility decay.",
+      "genericExample": "Avoid: 'This ONE Trick Will Make Them FURIOUS — And You WON'T Believe What Happens Next.'"
+    },
+    {
+      "name": "Literal aggression / compliance-landmine wording",
+      "category": "compliance",
+      "type": "avoid",
+      "pattern": "Copy leaning on shock words — fabricated order numbers, 'illegal,' 'untraceable,' extreme-violence language — may have won in a looser era but now triggers spam filtering, deliverability damage, and regulatory exposure that kills the whole send. Keep the underlying emotional mechanism; tone the literal words down to what platforms and regulators allow today.",
+      "genericExample": "Avoid: 'Your ILLEGAL un-trackable cash hack (no one can stop this).'"
+    },
+    {
+      "name": "Commentary wrapped around a quote with no original value",
+      "category": "social-proof",
+      "type": "avoid",
+      "pattern": "A giant pasted block quote doing 90% of the work, bookended by two limp sentences of 'this is right' with zero added insight, experience, or contrarian take. The reader could have just read the source. It feels derivative, adds no reason to trust or return to you, and the offer's voice disappears.",
+      "genericExample": "Avoid: '[500-word quote]. Pretty interesting stuff. What do you think? Comment below.'"
+    },
+    {
+      "name": "Mic-drop closers on every line (AI tell)",
+      "category": "craft",
+      "type": "avoid",
+      "pattern": "Ending paragraph after paragraph with a punchy aphorism reads as a machine imitating a writer. Cap it at one per piece. Most paragraphs should simply end on the idea, not a manufactured zinger.",
+      "genericExample": "Avoid closing every section with lines like 'Sleep is a skill.' / 'Rest is earned.' / 'The body keeps score.'"
+    },
+    {
+      "name": "Recurring 'it isn't X; it's Y' reversals",
+      "category": "craft",
+      "type": "avoid",
+      "pattern": "The negation-reversal is a sharp device once. Used three times it becomes a detectable pattern and the prose starts to feel formulaic and machine-made. Reserve it for a single high-impact moment.",
+      "genericExample": "Avoid stacking: 'It isn't a planner, it's a system.' … 'This isn't a habit, it's an identity.' … 'It isn't willpower, it's design.'"
+    },
+    {
+      "name": "Essayist stage directions",
+      "category": "craft",
+      "type": "avoid",
+      "pattern": "Self-narrating meta-phrases ('here's the honest ledger,' 'note what the question isn't') announce the writing instead of doing it. They read as a literary affectation a real person wouldn't use in plain selling. Cut them.",
+      "genericExample": "Avoid: 'Let's be honest about the real cost here.' / 'Notice what this number isn't telling you.'"
+    },
+    {
+      "name": "Uniform rhythm and em-dash density",
+      "category": "craft",
+      "type": "avoid",
+      "pattern": "Evenly-measured sentences and heavy em-dash use are a hallmark of machine prose. Break the meter on purpose: mix loose sentences, fragments, conversational asides, and paragraphs of very different lengths. A real writer is uneven.",
+      "genericExample": "Avoid every sentence running the same medium length with an em-dash mid-clause — vary it hard instead."
+    },
+    {
+      "name": "Hype and corporate filler words",
+      "category": "craft",
+      "type": "avoid",
+      "pattern": "Banned vocabulary that flattens any voice into AI-average: unlock, supercharge, game-changing, revolutionary, leverage, synergy, seamless, effortless. They make grand claims while saying nothing and signal generated copy. Use concrete, plain verbs instead.",
+      "genericExample": "Avoid 'unlock effortless productivity' — write 'clears your inbox in one pass.'"
+    }
+  ]
+}
