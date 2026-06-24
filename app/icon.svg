@@ -1,0 +1,16 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Winner-Grounded Copy Engine">
+  <rect x="3" y="3" width="58" height="58" rx="14" fill="#161109"/>
+  <g fill="#f0a23c">
+    <rect x="11" y="31" width="33" height="18" rx="3"/>
+    <rect x="16" y="22" width="15" height="10" rx="2"/>
+    <rect x="20" y="16" width="7" height="7" rx="2"/>
+    <rect x="6" y="41" width="6" height="9" rx="2"/>
+    <rect x="40" y="35" width="9" height="6" rx="3"/>
+  </g>
+  <circle cx="49" cy="38" r="8" fill="#f0a23c"/>
+  <circle cx="49" cy="38" r="3" fill="#161109"/>
+  <g stroke="#161109" stroke-width="2.5" stroke-linecap="round">
+    <line x1="19" y1="26" x2="28" y2="26"/>
+    <line x1="19" y1="29.5" x2="28" y2="29.5"/>
+  </g>
+</svg>
