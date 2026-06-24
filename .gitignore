@@ -28,3 +28,6 @@ yarn-error.log*
 
 # internal — never publish (handoff notes / todos)
 HANDOFF.md
+
+# next generates this on every build — do not track
+next-env.d.ts
