@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import type { SourceWinner } from '@/lib/types';
 
 type Hook = {
   hook: string;
@@ -73,7 +72,7 @@ const VOICES = [
   },
 ];
 
-export default function Engine({ samples }: { samples: SourceWinner[] }) {
+export default function Engine() {
   const [offer, setOffer] = useState('');
   const [salesPageUrl, setSalesPageUrl] = useState('');
   const [prospect, setProspect] = useState('');
@@ -103,17 +102,6 @@ export default function Engine({ samples }: { samples: SourceWinner[] }) {
     setSources((s) => (s.length < 3 ? [...s, { label: '', copy: '' }] : s));
   const removeSource = (i: number) =>
     setSources((s) => (s.length > 1 ? s.filter((_, j) => j !== i) : s));
-
-  const loadSample = (id: string) => {
-    const sample = samples.find((s) => s.id === id);
-    if (!sample) return;
-    const next = { label: sample.label, copy: sample.copy };
-    setSources((s) => {
-      const empty = s.findIndex((x) => !x.copy.trim());
-      if (empty >= 0) return s.map((x, j) => (j === empty ? next : x));
-      return s.length < 3 ? [...s, next] : s;
-    });
-  };
 
   const fileToBase64 = (file: File) =>
     new Promise<string>((resolve, reject) => {
@@ -514,28 +502,13 @@ export default function Engine({ samples }: { samples: SourceWinner[] }) {
           </div>
         ))}
 
-        <div className="row">
-          {sources.length < 3 && (
+        {sources.length < 3 && (
+          <div className="row">
             <button className="btn" onClick={addSource}>
               + Add another winner
             </button>
-          )}
-          <select
-            className="btn"
-            value=""
-            onChange={(e) => {
-              if (e.target.value) loadSample(e.target.value);
-              e.target.value = '';
-            }}
-          >
-            <option value="">Load a sample winner…</option>
-            {samples.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.label}
-              </option>
-            ))}
-          </select>
-        </div>
+          </div>
+        )}
       </div>
 
       <div className="generate-row">

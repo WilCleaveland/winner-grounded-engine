@@ -1,5 +1,4 @@
 import Engine from './Engine';
-import { SAMPLE_WINNERS } from '@/data/sampleWinners';
 
 export default function Page() {
   return (
@@ -13,18 +12,23 @@ export default function Page() {
           Paste a proven winner. The engine finds the <em>mechanism</em> that
           made it convert, fires fresh hooks in your voice off that same
           mechanism, then stress-tests each one like a skeptical buyer before it
-          survives. Not generic AI copy — direct response, grounded in what
-          works.
+          survives. This isn&rsquo;t a prompt wrapper on a cold Claude session:
+          every hook is built on my own direct-response playbook, distilled from
+          a deep library of winning swipes and the ideation frameworks I write
+          by. Then a tell-scanner built from an analysis of 89,239 Reddit posts
+          quietly strips the giveaways of machine copy (the reflex em dash, the
+          &ldquo;not X, but Y&rdquo; beat, the worn diction) so what survives
+          reads like a person wrote it.
         </p>
       </header>
 
-      <Engine samples={SAMPLE_WINNERS} />
+      <Engine />
 
       <footer className="foot">
-        Runs on Claude (claude-opus-4-8) with structured outputs. Ships with
-        synthetic sample winners — no client data. Inputs: paste copy, or drop /
-        paste a screenshot and vision reads the whole creative. Roadmap: URL /
-        VSL transcript, Meta Ad Library by advertiser.
+        Runs on Claude (claude-opus-4-8) with structured outputs. No client data
+        ships in this build. Inputs: a sales page URL, pasted copy, or a dropped
+        screenshot the vision model reads as a whole creative. Roadmap: VSL
+        transcript, Meta Ad Library by advertiser.
       </footer>
     </main>
   );
