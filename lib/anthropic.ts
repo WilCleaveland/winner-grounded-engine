@@ -56,6 +56,13 @@ async function createJson<T>(
     try {
       return JSON.parse(block.text) as T;
     } catch {
+      // Log which call truncated (the system prompt identifies it) so a recurring
+      // ceiling is diagnosable from the server log.
+      const sysHint =
+        typeof params.system === 'string' ? params.system.slice(0, 48) : 'call';
+      console.error(
+        `[createJson] parse fail attempt=${attempt} stop=${res.stop_reason} len=${block.text.length} sys="${sysHint}"`,
+      );
       lastErr =
         res.stop_reason === 'max_tokens'
           ? new Error('That response ran long and got cut off. Hit Generate again.')
@@ -88,7 +95,7 @@ export async function analyzeSalesPage(
 
   const out = await createJson<Omit<SalesPageProfile, 'url' | 'title'>>({
     model: MODEL,
-    max_tokens: 1500,
+    max_tokens: 4096,
     system: SALESPAGE_SYSTEM,
     messages: [{ role: 'user', content: user }],
     output_config: { format: { type: 'json_schema', schema: SALESPAGE_SCHEMA } },
@@ -166,7 +173,7 @@ export async function generateHooks(
 
   return createJson<GenerateResponse>({
     model: MODEL,
-    max_tokens: 4096,
+    max_tokens: 6144,
     system: `${ENGINE_SYSTEM}\n\n${PLAYBOOK_PROMPT}\n\n${CRAFT_FRAMEWORKS}`,
     messages: [{ role: 'user', content: user }],
     output_config: { format: { type: 'json_schema', schema: GENERATE_SCHEMA } },
@@ -227,7 +234,7 @@ async function cleanCopy(
   const cleaned = (
     await createJson<{ items: { text: string }[] }>({
       model: MODEL,
-      max_tokens: 4096,
+      max_tokens: 6144,
       system: CLEAN_SYSTEM,
       messages: [
         { role: 'user', content: `${list}\n\nReturn one cleaned item per input, in order.` },
@@ -301,7 +308,7 @@ export async function stressTest(
   return (
     await createJson<{ results: StressResult[] }>({
       model: MODEL,
-      max_tokens: 4096,
+      max_tokens: 6144,
       system: STRESS_SYSTEM,
       messages: [{ role: 'user', content: user }],
       output_config: { format: { type: 'json_schema', schema: STRESS_SCHEMA } },
@@ -340,7 +347,7 @@ export async function extractCreativeFromImage(
 ): Promise<ExtractedCreative> {
   return createJson<ExtractedCreative>({
     model: MODEL,
-    max_tokens: 2000,
+    max_tokens: 3000,
     system: VISION_SYSTEM,
     messages: [
       {
@@ -393,7 +400,7 @@ export async function generateEmail(req: EmailRequest): Promise<EmailDraft> {
 
   const draft = await createJson<EmailDraft>({
     model: MODEL,
-    max_tokens: 3000,
+    max_tokens: 4096,
     system: `${EMAIL_SYSTEM}\n\n${CRAFT_FRAMEWORKS}`,
     messages: [{ role: 'user', content: user }],
     output_config: { format: { type: 'json_schema', schema: EMAIL_SCHEMA } },
@@ -425,7 +432,7 @@ export async function strengthenDraft(
 
   const out = await createJson<StrengthenResult>({
     model: MODEL,
-    max_tokens: 3000,
+    max_tokens: 4096,
     system: STRENGTHEN_SYSTEM,
     messages: [{ role: 'user', content: user }],
     output_config: { format: { type: 'json_schema', schema: STRENGTHEN_SCHEMA } },
