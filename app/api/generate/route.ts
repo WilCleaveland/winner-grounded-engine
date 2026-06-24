@@ -24,8 +24,12 @@ export async function POST(req: Request) {
 
     const body = (await req.json()) as GenerateBody;
 
-    if (!body?.offer?.trim()) {
-      return NextResponse.json({ error: 'An offer is required.' }, { status: 400 });
+    const url = body.salesPageUrl?.trim();
+    if (!body?.offer?.trim() && !url && !body.salesPage) {
+      return NextResponse.json(
+        { error: 'Add an offer, or a sales page URL to draw it from.' },
+        { status: 400 },
+      );
     }
     const sources = (body.sources ?? []).filter((s) => s.copy?.trim());
     if (sources.length === 0) {
@@ -45,14 +49,16 @@ export async function POST(req: Request) {
     // Scrape it, distill it, then let it drive the voice; the selected preset
     // (body.voice) is only a light tweak on top.
     let salesPage = body.salesPage;
-    const url = body.salesPageUrl?.trim();
     if (url && !salesPage) {
       const page = await scrapeSalesPage(url);
       salesPage = await analyzeSalesPage(page);
     }
     const voice = composeVoice(salesPage, body.voice);
+    // The offer is the hooks' target. If left blank, draw it from the page's
+    // product so a single-product page needs no separate offer line.
+    const offer = body.offer?.trim() || salesPage?.product || '';
 
-    const gen = await generateHooks({ ...body, voice, sources, salesPage });
+    const gen = await generateHooks({ ...body, offer, voice, sources, salesPage });
     // Silent quality gate: scrub any AI-writing tells before the copy is shown
     // or stress-tested. The generation prompt already avoids them, so this is a
     // no-op for clean batches (no extra API call when nothing trips).

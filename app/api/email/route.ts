@@ -18,7 +18,10 @@ export async function POST(req: Request) {
     if (!body?.hook?.trim()) {
       return NextResponse.json({ error: 'A hook is required.' }, { status: 400 });
     }
-    if (!body?.offer?.trim()) {
+    // Offer falls back to the page's product, same as generate (so a page-driven
+    // session with a blank offer can still expand a hook into an email).
+    const offer = body.offer?.trim() || body.salesPage?.product || '';
+    if (!offer) {
       return NextResponse.json({ error: 'An offer is required.' }, { status: 400 });
     }
     const sources = (body.sources ?? []).filter((s) => s.copy?.trim());
@@ -26,7 +29,7 @@ export async function POST(req: Request) {
     // already has (no re-scrape).
     const voice = composeVoice(body.salesPage, body.voice);
 
-    const draft = await generateEmail({ ...body, voice, sources });
+    const draft = await generateEmail({ ...body, offer, voice, sources });
     return NextResponse.json(draft);
   } catch (err) {
     const raw = err instanceof Error ? err.message : 'Could not build the email.';

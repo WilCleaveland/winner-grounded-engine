@@ -333,25 +333,16 @@ export default function Engine() {
   );
 
   const canRun =
-    !loading && offer.trim().length > 0 && sources.some((s) => s.copy.trim());
+    !loading &&
+    (offer.trim().length > 0 || salesPageUrl.trim().length > 0) &&
+    sources.some((s) => s.copy.trim());
 
   return (
     <>
-      {/* Offer */}
-      <div className="field">
-        <label className="label">The offer — what are you selling?</label>
-        <input
-          className="input"
-          value={offer}
-          placeholder="e.g. A solar power bank for blackouts, list-building lead magnet"
-          onChange={(e) => setOffer(e.target.value)}
-        />
-      </div>
-
       {/* Sales page — the primary voice + product source */}
       <div className="field">
         <label className="label">
-          Your product sales page URL <span className="opt">optional, but it&rsquo;s the voice</span>
+          Your product sales page URL <span className="opt">optional, but highly recommended for voice guidance</span>
         </label>
         <input
           className="input"
@@ -361,9 +352,26 @@ export default function Engine() {
         />
         <p className="fieldnote">
           When set, the page becomes the voice the hooks are written in, and grounds
-          them in your real offer (no invented proof). The voice picker below then
-          only nudges it.
+          them in your real offer (no invented proof).{' '}
+          <strong>The voice picker below then only nudges it.</strong>
         </p>
+      </div>
+
+      {/* Offer — the target of the hooks. Optional when a sales page is supplied
+          (we draw it from the page); fill it to narrow to one product/angle. */}
+      <div className="field">
+        <label className="label">
+          The offer — what are you selling?{' '}
+          <span className="opt">
+            Only required if sales page URL isn&rsquo;t supplied
+          </span>
+        </label>
+        <input
+          className="input"
+          value={offer}
+          placeholder="e.g. A solar power bank for blackouts, list-building lead magnet"
+          onChange={(e) => setOffer(e.target.value)}
+        />
       </div>
 
       {/* Sparse priming — optional context that sharpens the hooks */}

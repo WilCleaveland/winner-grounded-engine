@@ -9,14 +9,11 @@ export default function Page() {
           Hooks that learn from what already won.
         </h1>
         <p className="dek">
-          Paste a proven winner. The engine finds the <em>mechanism</em> that
-          made it convert, fires fresh hooks in your voice off that same
-          mechanism, then stress-tests each one like a skeptical buyer before it
-          survives. This isn&rsquo;t a prompt wrapper on a cold Claude session:
-          every hook is built on my own direct-response playbook, distilled from
-          a deep library of winning swipes and the ideation frameworks I write
-          by. Then a tell-scanner built from an analysis of 89,239 Reddit posts
-          quietly strips the giveaways of machine copy (the reflex em dash, the
+          This isn&rsquo;t a prompt wrapper on a cold Claude session: every hook
+          is built on my own direct-response playbook, distilled from a deep
+          library of winning swipes and proven ideation frameworks. Then a
+          tell-scanner built from an analysis of 89,239 Reddit posts quietly
+          strips the giveaways of machine copy (the reflex em dash, the
           &ldquo;not X, but Y&rdquo; beat, the worn diction) so what survives
           reads like a person wrote it.
         </p>
