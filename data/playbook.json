@@ -116,8 +116,15 @@
       "name": "Pure curiosity gap — withhold the subject",
       "category": "curiosity",
       "type": "do",
-      "pattern": "Use a 2–4 word incomplete thought that names no product and resolves nothing, forcing the body to pay it off. Opens enormously. ONLY safe when the body actually delivers the resolution — pair with strict do-not-overpromise discipline.",
+      "pattern": "Use a 2–4 word incomplete thought that names no product and resolves nothing, forcing the body to pay it off. Opens enormously. ONLY safe when (a) the body actually delivers the resolution, and (b) the gap still implies a payoff or stake the reader cares about. Reserve the bare 2–4 word form for lines already PROVEN to open on this audience — a brand-new bare gap with no reason to care is a 'who cares?' miss.",
       "genericExample": "Subject: worse than burnout"
+    },
+    {
+      "name": "Curiosity with a payload — name the payoff or the stakes",
+      "category": "curiosity",
+      "type": "do",
+      "pattern": "A curiosity hook still has to carry a payload: nod at the concrete payoff the product delivers or the stake of ignoring it. Pure intrigue with no reason to care reads as vague and stirs no emotion. Gut check: read the line, and if the honest reaction is 'ok, but who cares?', kill it. Keep the open loop, but name the prize or the cost. This refines — does not contradict — the bare curiosity gap: that bare form is earned only by a line already proven on this audience; a fresh curiosity hook must give a reason to care.",
+      "genericExample": "Subject: weak — 'what the insiders already know'; strong — 'the pricing trick insiders use to cut a bill 30%'"
     },
     {
       "name": "One-line capability demo + scarcity",
