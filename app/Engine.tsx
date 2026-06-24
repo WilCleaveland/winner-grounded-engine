@@ -10,9 +10,17 @@ type Hook = {
   whyItPulls: string;
   stress: { weakness: string; survives: boolean; verdict: string } | null;
 };
+type SalesPage = {
+  url: string;
+  title: string;
+  voiceProfile: string;
+  product: string;
+  proofOnPage: string[];
+};
 type Result = {
   mechanisms: { source: string; mechanism: string }[];
   hooks: Hook[];
+  salesPage?: SalesPage;
   mock?: boolean;
 };
 type Source = { label: string; copy: string };
@@ -32,6 +40,10 @@ const freshStrengthen = (): StrengthenState => ({
   error: null,
   result: null,
 });
+
+// The default voice draws entirely from the user's scraped sales page; the
+// presets below are only a light tweak layered on top of it.
+const SALESPAGE_VOICE = '__salespage';
 
 const VOICES = [
   {
@@ -63,9 +75,10 @@ const VOICES = [
 
 export default function Engine({ samples }: { samples: SourceWinner[] }) {
   const [offer, setOffer] = useState('');
+  const [salesPageUrl, setSalesPageUrl] = useState('');
   const [prospect, setProspect] = useState('');
   const [market, setMarket] = useState('');
-  const [voice, setVoice] = useState(VOICES[0].label);
+  const [voice, setVoice] = useState(SALESPAGE_VOICE);
   const [customVoice, setCustomVoice] = useState('');
   const [sources, setSources] = useState<Source[]>([{ label: '', copy: '' }]);
   const [loading, setLoading] = useState(false);
@@ -75,9 +88,13 @@ export default function Engine({ samples }: { samples: SourceWinner[] }) {
   // Per-hook email drafts (+ their strengthen pass), keyed by the hook text.
   const [emails, setEmails] = useState<Record<string, EmailState>>({});
 
+  // The voice the user *picked*. The sales-page voice (when there's a page) is
+  // applied server-side; here '' means "no preset — draw from the page only".
   const resolveVoice = () => {
+    if (voice === SALESPAGE_VOICE) return '';
+    if (voice === '__custom') return customVoice;
     const selected = VOICES.find((x) => x.label === voice);
-    return voice === '__custom' ? customVoice : selected ? selected.guide : voice;
+    return selected ? selected.guide : voice;
   };
 
   const setSource = (i: number, field: keyof Source, val: string) =>
@@ -148,6 +165,7 @@ export default function Engine({ samples }: { samples: SourceWinner[] }) {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           offer,
+          salesPageUrl: salesPageUrl.trim() || undefined,
           voice: resolveVoice(),
           prospect: prospect.trim() || undefined,
           market: market.trim() || undefined,
@@ -178,6 +196,7 @@ export default function Engine({ samples }: { samples: SourceWinner[] }) {
           hook: h.hook,
           offer,
           voice: resolveVoice(),
+          salesPage: result?.salesPage,
           prospect: prospect.trim() || undefined,
           market: market.trim() || undefined,
           sources: sources.filter((s) => s.copy.trim()),
@@ -213,7 +232,11 @@ export default function Engine({ samples }: { samples: SourceWinner[] }) {
       const res = await fetch('/api/strengthen', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ body: st.draft.body, voice: resolveVoice() }),
+        body: JSON.stringify({
+          body: st.draft.body,
+          voice: resolveVoice(),
+          salesPage: result?.salesPage,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Could not strengthen the draft.');
@@ -337,6 +360,24 @@ export default function Engine({ samples }: { samples: SourceWinner[] }) {
         />
       </div>
 
+      {/* Sales page — the primary voice + product source */}
+      <div className="field">
+        <label className="label">
+          Your product sales page URL <span className="opt">optional, but it&rsquo;s the voice</span>
+        </label>
+        <input
+          className="input"
+          value={salesPageUrl}
+          placeholder="https://… — we read it for your real voice and what proof is actually on the page"
+          onChange={(e) => setSalesPageUrl(e.target.value)}
+        />
+        <p className="fieldnote">
+          When set, the page becomes the voice the hooks are written in, and grounds
+          them in your real offer (no invented proof). The voice picker below then
+          only nudges it.
+        </p>
+      </div>
+
       {/* Sparse priming — optional context that sharpens the hooks */}
       <div className="field">
         <label className="label">
@@ -364,12 +405,19 @@ export default function Engine({ samples }: { samples: SourceWinner[] }) {
 
       {/* Voice */}
       <div className="field">
-        <label className="label">Voice</label>
+        <label className="label">
+          Voice {salesPageUrl.trim() && voice !== SALESPAGE_VOICE && (
+            <span className="opt">a light tweak on your sales-page voice</span>
+          )}
+        </label>
         <select
           className="select"
           value={voice}
           onChange={(e) => setVoice(e.target.value)}
         >
+          <option value={SALESPAGE_VOICE}>
+            Draw from sales page only {salesPageUrl.trim() ? '(recommended)' : ''}
+          </option>
           {VOICES.map((v) => (
             <option key={v.label} value={v.label}>
               {v.label}
@@ -377,6 +425,12 @@ export default function Engine({ samples }: { samples: SourceWinner[] }) {
           ))}
           <option value="__custom">Custom…</option>
         </select>
+        {voice === SALESPAGE_VOICE && !salesPageUrl.trim() && (
+          <p className="fieldnote">
+            Add a sales page URL above to use its voice. With no page, this falls
+            back to a plain, direct-response voice.
+          </p>
+        )}
         {voice === '__custom' && (
           <input
             className="input"
@@ -502,6 +556,25 @@ export default function Engine({ samples }: { samples: SourceWinner[] }) {
           {result.mock && (
             <div className="demo-note">
               Demo mode — canned sample output, no API call (no credits spent)
+            </div>
+          )}
+          {result.salesPage && (
+            <div className="salespage-read">
+              <span className="label-inline">
+                Read from your sales page —{' '}
+                <a href={result.salesPage.url} target="_blank" rel="noreferrer">
+                  {result.salesPage.title}
+                </a>
+              </span>
+              <p className="sp-voice">
+                <strong>Voice:</strong> {result.salesPage.voiceProfile}
+              </p>
+              {result.salesPage.proofOnPage.length > 0 && (
+                <p className="sp-proof">
+                  <strong>Proof on the page (the only specifics reused):</strong>{' '}
+                  {result.salesPage.proofOnPage.join(' · ')}
+                </p>
+              )}
             </div>
           )}
           <h2 className="sectionhead">Why these won — the mechanism</h2>

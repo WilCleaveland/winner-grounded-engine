@@ -9,9 +9,12 @@ import {
   EMAIL_INSTRUCTIONS,
   STRENGTHEN_SYSTEM,
   STRENGTHEN_INSTRUCTIONS,
+  SALESPAGE_SYSTEM,
+  SALESPAGE_INSTRUCTIONS,
 } from './prompts';
 import { PLAYBOOK_PROMPT } from './playbook';
 import { scanText } from './unslop/scan';
+import type { ScrapedPage } from './scrape';
 import type {
   GenerateRequest,
   GenerateResponse,
@@ -21,6 +24,7 @@ import type {
   EmailDraft,
   StrengthenRequest,
   StrengthenResult,
+  SalesPageProfile,
 } from './types';
 
 const MODEL = 'claude-opus-4-8';
@@ -40,6 +44,49 @@ function parseJson<T>(res: Anthropic.Message): T {
     throw new Error('No text content returned from model');
   }
   return JSON.parse(block.text) as T;
+}
+
+// ---- 0. Read the user's own sales page (voice + product) -------------------
+// The page is the PRIMARY voice source and grounds the product so hooks stay
+// true to the real offer. Run once per generate; the profile is reused by the
+// email + strengthen passes without re-scraping.
+
+const SALESPAGE_SCHEMA = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    voiceProfile: { type: 'string' },
+    product: { type: 'string' },
+    proofOnPage: { type: 'array', items: { type: 'string' } },
+  },
+  required: ['voiceProfile', 'product', 'proofOnPage'],
+};
+
+export async function analyzeSalesPage(
+  page: ScrapedPage,
+): Promise<SalesPageProfile> {
+  const user = `SALES PAGE — ${page.title}\nURL: ${page.url}\n"""\n${page.markdown}\n"""\n\n${SALESPAGE_INSTRUCTIONS}`;
+
+  const res = await client().messages.create({
+    model: MODEL,
+    max_tokens: 1500,
+    system: SALESPAGE_SYSTEM,
+    messages: [{ role: 'user', content: user }],
+    output_config: { format: { type: 'json_schema', schema: SALESPAGE_SCHEMA } },
+  } as Anthropic.MessageCreateParamsNonStreaming);
+
+  const out = parseJson<Omit<SalesPageProfile, 'url' | 'title'>>(res);
+  return { url: page.url, title: page.title, ...out };
+}
+
+// The product-context block injected into generation/email when a sales page is
+// in play. proofOnPage is the ONLY proof downstream copy may reuse (never-falsify).
+function salesPageContext(page: SalesPageProfile | undefined): string {
+  if (!page) return '';
+  const proof = page.proofOnPage.length
+    ? `\n\nPROOF/SPECIFICS ACTUALLY ON THE PAGE (you MAY reuse these real specifics; invent NOTHING beyond them):\n${page.proofOnPage.map((p) => `- ${p}`).join('\n')}`
+    : '\n\n(The page states no hard proof — so use NO invented numbers, authorities, or testimonials.)';
+  return `THE PRODUCT (from the brand's own sales page — ground every hook in this real offer):\n${page.product}${proof}`;
 }
 
 // ---- 1. Extract mechanisms + generate hooks -------------------------------
@@ -91,6 +138,7 @@ export async function generateHooks(
 
   // Optional Sparse-Priming context — only included when supplied.
   const priming = [
+    salesPageContext(req.salesPage),
     req.prospect?.trim() && `PROSPECT (who they are, their pain/goal):\n${req.prospect.trim()}`,
     req.market?.trim() && `MARKET (the mood/belief they're in right now):\n${req.market.trim()}`,
   ]
@@ -321,6 +369,7 @@ export async function generateEmail(req: EmailRequest): Promise<EmailDraft> {
     })
     .join('\n\n');
   const priming = [
+    salesPageContext(req.salesPage),
     req.prospect?.trim() && `PROSPECT:\n${req.prospect.trim()}`,
     req.market?.trim() && `MARKET:\n${req.market.trim()}`,
   ]

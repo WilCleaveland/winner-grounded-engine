@@ -1,14 +1,23 @@
 import { NextResponse } from 'next/server';
-import { generateHooks, unslopHooks, stressTest } from '@/lib/anthropic';
+import {
+  generateHooks,
+  unslopHooks,
+  stressTest,
+  analyzeSalesPage,
+} from '@/lib/anthropic';
+import { scrapeSalesPage } from '@/lib/scrape';
+import { composeVoice } from '@/lib/voice';
 import { MOCK_RESULT } from '@/data/mockResult';
 import type { GenerateRequest } from '@/lib/types';
 
 export const runtime = 'nodejs';
 export const maxDuration = 120;
 
+type GenerateBody = GenerateRequest & { salesPageUrl?: string };
+
 export async function POST(req: Request) {
   try {
-    const body = (await req.json()) as GenerateRequest;
+    const body = (await req.json()) as GenerateBody;
 
     if (!body?.offer?.trim()) {
       return NextResponse.json({ error: 'An offer is required.' }, { status: 400 });
@@ -20,7 +29,6 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
-    const voice = body.voice?.trim() || 'punchy, plain-spoken direct response';
 
     // Demo mode: serve canned output, no API call. Local-only (prod never sets it).
     if (process.env.ENGINE_MOCK === '1') {
@@ -28,7 +36,18 @@ export async function POST(req: Request) {
       return NextResponse.json(MOCK_RESULT);
     }
 
-    const gen = await generateHooks({ ...body, voice, sources });
+    // The sales page (when supplied) is the primary voice + product source.
+    // Scrape it, distill it, then let it drive the voice; the selected preset
+    // (body.voice) is only a light tweak on top.
+    let salesPage = body.salesPage;
+    const url = body.salesPageUrl?.trim();
+    if (url && !salesPage) {
+      const page = await scrapeSalesPage(url);
+      salesPage = await analyzeSalesPage(page);
+    }
+    const voice = composeVoice(salesPage, body.voice);
+
+    const gen = await generateHooks({ ...body, voice, sources, salesPage });
     // Silent quality gate: scrub any AI-writing tells before the copy is shown
     // or stress-tested. The generation prompt already avoids them, so this is a
     // no-op for clean batches (no extra API call when nothing trips).
@@ -39,7 +58,7 @@ export async function POST(req: Request) {
     );
     const hooks = cleanHooks.map((h, i) => ({ ...h, stress: stress[i] ?? null }));
 
-    return NextResponse.json({ mechanisms: gen.mechanisms, hooks });
+    return NextResponse.json({ mechanisms: gen.mechanisms, hooks, salesPage });
   } catch (err) {
     const raw = err instanceof Error ? err.message : 'Generation failed.';
     const overloaded = /overloaded|\b429\b|\b529\b|rate.?limit/i.test(raw);

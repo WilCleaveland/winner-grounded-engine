@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { strengthenDraft } from '@/lib/anthropic';
+import { composeVoice } from '@/lib/voice';
 import type { StrengthenRequest } from '@/lib/types';
 
 export const runtime = 'nodejs';
@@ -12,7 +13,7 @@ export async function POST(req: Request) {
     if (!body?.body?.trim()) {
       return NextResponse.json({ error: 'A draft is required.' }, { status: 400 });
     }
-    const voice = body.voice?.trim() || 'punchy, plain-spoken direct response';
+    const voice = composeVoice(body.salesPage, body.voice);
 
     const result = await strengthenDraft({ body: body.body, voice });
     return NextResponse.json(result);

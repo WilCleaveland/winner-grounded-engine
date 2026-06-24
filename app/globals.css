@@ -85,6 +85,33 @@ body {
   opacity: 0.6;
   font-style: italic;
 }
+.fieldnote {
+  margin-top: 6px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.salespage-read {
+  margin-bottom: 22px;
+  padding: 14px 16px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+}
+.salespage-read .label-inline a {
+  color: var(--accent);
+}
+.salespage-read .sp-voice,
+.salespage-read .sp-proof {
+  margin-top: 8px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.salespage-read .sp-proof {
+  color: var(--muted);
+}
 .input,
 .textarea,
 .select {

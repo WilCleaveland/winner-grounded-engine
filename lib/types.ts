@@ -44,12 +44,25 @@ export type GenerateRequest = {
   sources: { label: string; copy: string }[];
   prospect?: string; // optional Sparse-Priming: who the reader is, their pain/goal
   market?: string; // optional Sparse-Priming: the market's current mood/belief
+  salesPage?: SalesPageProfile; // the scraped page: primary voice + product source
   count?: number;
+};
+
+// Distilled from the user's own sales page (scraped). The page is the PRIMARY
+// voice source and grounds the product facts so hooks stay true to the real
+// offer (never-falsify: proofOnPage is the only proof generation may reuse).
+export type SalesPageProfile = {
+  url: string;
+  title: string;
+  voiceProfile: string; // the brand's actual voice, concrete enough to imitate
+  product: string; // what's sold, the core promise/mechanism, the audience
+  proofOnPage: string[]; // real specifics on the page that copy MAY reuse
 };
 
 export type GenerateResponse = {
   mechanisms: Mechanism[];
   hooks: Hook[];
+  salesPage?: SalesPageProfile; // echoed back so the client can reuse it
 };
 
 // Expand a chosen hook into a full email (the snapshot doctrine).
@@ -60,6 +73,7 @@ export type EmailRequest = {
   sources: { label: string; copy: string }[];
   prospect?: string;
   market?: string;
+  salesPage?: SalesPageProfile; // reused from generate; no re-scrape
 };
 
 export type EmailDraft = {
@@ -72,6 +86,7 @@ export type EmailDraft = {
 export type StrengthenRequest = {
   body: string;
   voice: string;
+  salesPage?: SalesPageProfile; // keep the brand voice through the strengthen pass
 };
 
 export type StrengthenResult = {

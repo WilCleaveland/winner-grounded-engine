@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { generateEmail } from '@/lib/anthropic';
+import { composeVoice } from '@/lib/voice';
 import type { EmailRequest } from '@/lib/types';
 
 export const runtime = 'nodejs';
@@ -16,7 +17,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'An offer is required.' }, { status: 400 });
     }
     const sources = (body.sources ?? []).filter((s) => s.copy?.trim());
-    const voice = body.voice?.trim() || 'punchy, plain-spoken direct response';
+    // Same voice blend as generate, reusing the sales-page profile the client
+    // already has (no re-scrape).
+    const voice = composeVoice(body.salesPage, body.voice);
 
     const draft = await generateEmail({ ...body, voice, sources });
     return NextResponse.json(draft);

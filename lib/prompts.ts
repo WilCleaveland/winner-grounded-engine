@@ -94,6 +94,20 @@ Be honest and useful. A hook that survives a real stress test is worth more than
 
 export const VISION_SYSTEM = `You extract direct-response creative from a screenshot of an ad, email, or landing page — both the copy AND what the visual is doing. Transcribe the actual words (headline, body, CTA). Then read the visual's job: the product shot, the visual hook, the layout move, the proof element — describe its ROLE and why it pulls, not just its appearance. A creative's image is often the real hook; capture that.`;
 
+// ---- Read the user's own sales page: voice + product facts -----------------
+// The page is the PRIMARY voice source for everything downstream, and it grounds
+// the product so the hooks describe the real offer (never-falsify).
+
+export const SALESPAGE_SYSTEM = `You are a direct-response copy chief reading a brand's own sales page so the team can write new copy that sounds exactly like them and stays true to their real offer. You report what is ON the page — you never invent, embellish, or "improve."`;
+
+export const SALESPAGE_INSTRUCTIONS = `Read the sales page below and return three things:
+
+1. voiceProfile — the brand's ACTUAL voice, described concretely enough that another writer could imitate it blind. Name the real markers: sentence length and rhythm, diction (plain vs. elevated, the specific words they reach for), point of view (first/second person, how they address the reader), energy (calm/urgent/swaggering), how they handle proof and claims, recurring tics. 3-6 sentences. Describe what's actually there, not what a generic DR page sounds like.
+
+2. product — what they're selling, the core promise/mechanism, and who the page is written for. 2-4 sentences.
+
+3. proofOnPage — an array of the SPECIFIC, real proof points present on the page: named numbers, guarantees, credentials, named authorities, dated facts, concrete testimonials/results. These are the ONLY specifics downstream copy is allowed to reuse — so capture them faithfully and verbatim where it matters. Empty array if the page has none. Do NOT invent or infer proof that isn't written on the page.`;
+
 // ---- Expand a chosen hook into a full email (the snapshot doctrine) --------
 
 export const EMAIL_SYSTEM = `You are a direct-response email copywriter. You build the kind of promo email a media buyer actually sends to a cold list.
