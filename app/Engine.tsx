@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type Hook = {
   hook: string;
@@ -86,6 +86,54 @@ export default function Engine() {
   const [ingesting, setIngesting] = useState<number | null>(null);
   // Per-hook email drafts (+ their strengthen pass), keyed by the hook text.
   const [emails, setEmails] = useState<Record<string, EmailState>>({});
+
+  // Persist the inputs so a refresh never wipes them — restore on mount, save on
+  // every change. Loading after mount (not in the initial state) keeps the first
+  // client render matching the server render, so there's no hydration mismatch.
+  // Results stay ephemeral; only the inputs are saved.
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('wge:inputs');
+      if (!saved) return;
+      const s = JSON.parse(saved);
+      if (typeof s.offer === 'string') setOffer(s.offer);
+      if (typeof s.salesPageUrl === 'string') setSalesPageUrl(s.salesPageUrl);
+      if (typeof s.prospect === 'string') setProspect(s.prospect);
+      if (typeof s.market === 'string') setMarket(s.market);
+      if (typeof s.voice === 'string') setVoice(s.voice);
+      if (typeof s.customVoice === 'string') setCustomVoice(s.customVoice);
+      if (Array.isArray(s.sources) && s.sources.length) setSources(s.sources);
+    } catch {
+      // corrupt or unavailable storage — fall back to the empty defaults
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        'wge:inputs',
+        JSON.stringify({ offer, salesPageUrl, prospect, market, voice, customVoice, sources }),
+      );
+    } catch {
+      // private mode / quota — persistence is best-effort, never block the UI
+    }
+  }, [offer, salesPageUrl, prospect, market, voice, customVoice, sources]);
+
+  const clearInputs = () => {
+    setOffer('');
+    setSalesPageUrl('');
+    setProspect('');
+    setMarket('');
+    setVoice(SALESPAGE_VOICE);
+    setCustomVoice('');
+    setSources([{ label: '', copy: '' }]);
+    setResult(null);
+    try {
+      localStorage.removeItem('wge:inputs');
+    } catch {
+      // ignore — already cleared in memory
+    }
+  };
 
   // The voice the user *picked*. The sales-page voice (when there's a page) is
   // applied server-side; here '' means "no preset — draw from the page only".
@@ -528,6 +576,12 @@ export default function Engine() {
             Extracting mechanisms → generating → stress-testing (~20s)
           </span>
         )}
+        {!loading &&
+          (offer.trim() || salesPageUrl.trim() || sources.some((s) => s.copy.trim())) && (
+            <button className="btn-link" onClick={clearInputs}>
+              Clear inputs
+            </button>
+          )}
       </div>
 
       {error && <div className="error">{error}</div>}
