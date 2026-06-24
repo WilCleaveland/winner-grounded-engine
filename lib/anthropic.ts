@@ -37,13 +37,32 @@ function client(): Anthropic {
   return new Anthropic({ apiKey, maxRetries: 4 });
 }
 
-// With structured outputs the first text block is valid JSON matching the schema.
-function parseJson<T>(res: Anthropic.Message): T {
-  const block = res.content.find((b) => b.type === 'text');
-  if (!block || block.type !== 'text') {
-    throw new Error('No text content returned from model');
+// Create a structured-output message and parse its JSON. With json_schema the
+// text block is almost always valid JSON, but a response can occasionally come
+// back truncated or malformed — rare and transient. The calls are side-effect
+// free, so retry once before surfacing a clean, actionable error instead of the
+// raw "Unterminated string in JSON …" the V8 parser throws.
+async function createJson<T>(
+  params: Anthropic.MessageCreateParamsNonStreaming,
+): Promise<T> {
+  let lastErr: unknown = new Error('Generation failed.');
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const res = await client().messages.create(params);
+    const block = res.content.find((b) => b.type === 'text');
+    if (!block || block.type !== 'text') {
+      lastErr = new Error('No text content returned from the model.');
+      continue;
+    }
+    try {
+      return JSON.parse(block.text) as T;
+    } catch {
+      lastErr =
+        res.stop_reason === 'max_tokens'
+          ? new Error('That response ran long and got cut off. Hit Generate again.')
+          : new Error('The model returned a cut-off response. Hit Generate again.');
+    }
   }
-  return JSON.parse(block.text) as T;
+  throw lastErr;
 }
 
 // ---- 0. Read the user's own sales page (voice + product) -------------------
@@ -67,15 +86,13 @@ export async function analyzeSalesPage(
 ): Promise<SalesPageProfile> {
   const user = `SALES PAGE — ${page.title}\nURL: ${page.url}\n"""\n${page.markdown}\n"""\n\n${SALESPAGE_INSTRUCTIONS}`;
 
-  const res = await client().messages.create({
+  const out = await createJson<Omit<SalesPageProfile, 'url' | 'title'>>({
     model: MODEL,
     max_tokens: 1500,
     system: SALESPAGE_SYSTEM,
     messages: [{ role: 'user', content: user }],
     output_config: { format: { type: 'json_schema', schema: SALESPAGE_SCHEMA } },
   } as Anthropic.MessageCreateParamsNonStreaming);
-
-  const out = parseJson<Omit<SalesPageProfile, 'url' | 'title'>>(res);
   return { url: page.url, title: page.title, ...out };
 }
 
@@ -147,15 +164,13 @@ export async function generateHooks(
 
   const user = `OFFER:\n${req.offer}\n\nVOICE:\n${req.voice}${priming ? `\n\n${priming}` : ''}\n\nPROVEN WINNERS (${req.sources.length}):\n\n${winners}\n\n${GENERATE_INSTRUCTIONS}\n\nGenerate ${count} hooks.`;
 
-  const res = await client().messages.create({
+  return createJson<GenerateResponse>({
     model: MODEL,
     max_tokens: 4096,
     system: `${ENGINE_SYSTEM}\n\n${PLAYBOOK_PROMPT}\n\n${CRAFT_FRAMEWORKS}`,
     messages: [{ role: 'user', content: user }],
     output_config: { format: { type: 'json_schema', schema: GENERATE_SCHEMA } },
   } as Anthropic.MessageCreateParamsNonStreaming);
-
-  return parseJson<GenerateResponse>(res);
 }
 
 // ---- 1b. Silent unslop gate -----------------------------------------------
@@ -209,17 +224,17 @@ async function cleanCopy(
     )
     .join('\n\n');
 
-  const res = await client().messages.create({
-    model: MODEL,
-    max_tokens: 4096,
-    system: CLEAN_SYSTEM,
-    messages: [
-      { role: 'user', content: `${list}\n\nReturn one cleaned item per input, in order.` },
-    ],
-    output_config: { format: { type: 'json_schema', schema: CLEAN_SCHEMA } },
-  } as Anthropic.MessageCreateParamsNonStreaming);
-
-  const cleaned = parseJson<{ items: { text: string }[] }>(res).items;
+  const cleaned = (
+    await createJson<{ items: { text: string }[] }>({
+      model: MODEL,
+      max_tokens: 4096,
+      system: CLEAN_SYSTEM,
+      messages: [
+        { role: 'user', content: `${list}\n\nReturn one cleaned item per input, in order.` },
+      ],
+      output_config: { format: { type: 'json_schema', schema: CLEAN_SCHEMA } },
+    } as Anthropic.MessageCreateParamsNonStreaming)
+  ).items;
   return items.map((it, n) => cleaned[n]?.text?.trim() || it.text);
 }
 
@@ -283,15 +298,15 @@ export async function stressTest(
   const list = hooks.map((h, i) => `${i + 1}. ${h}`).join('\n');
   const user = `VOICE CONTEXT: ${voice}\n\nHOOKS TO STRESS-TEST:\n${list}\n\nReturn one result per hook, in the same order.`;
 
-  const res = await client().messages.create({
-    model: MODEL,
-    max_tokens: 4096,
-    system: STRESS_SYSTEM,
-    messages: [{ role: 'user', content: user }],
-    output_config: { format: { type: 'json_schema', schema: STRESS_SCHEMA } },
-  } as Anthropic.MessageCreateParamsNonStreaming);
-
-  return parseJson<{ results: StressResult[] }>(res).results;
+  return (
+    await createJson<{ results: StressResult[] }>({
+      model: MODEL,
+      max_tokens: 4096,
+      system: STRESS_SYSTEM,
+      messages: [{ role: 'user', content: user }],
+      output_config: { format: { type: 'json_schema', schema: STRESS_SCHEMA } },
+    } as Anthropic.MessageCreateParamsNonStreaming)
+  ).results;
 }
 
 // ---- Vision: read a creative (copy + visual) from an image -----------------
@@ -323,7 +338,7 @@ export async function extractCreativeFromImage(
   base64: string,
   mediaType: ImageMediaType,
 ): Promise<ExtractedCreative> {
-  const res = await client().messages.create({
+  return createJson<ExtractedCreative>({
     model: MODEL,
     max_tokens: 2000,
     system: VISION_SYSTEM,
@@ -344,8 +359,6 @@ export async function extractCreativeFromImage(
     ],
     output_config: { format: { type: 'json_schema', schema: CREATIVE_SCHEMA } },
   } as Anthropic.MessageCreateParamsNonStreaming);
-
-  return parseJson<ExtractedCreative>(res);
 }
 
 // ---- 3. Expand a chosen hook into a full email -----------------------------
@@ -378,15 +391,13 @@ export async function generateEmail(req: EmailRequest): Promise<EmailDraft> {
 
   const user = `OFFER:\n${req.offer}\n\nVOICE:\n${req.voice}${priming ? `\n\n${priming}` : ''}\n\nTHE WINNING HOOK to build the email from:\n"${req.hook}"\n\nVOICE REFERENCE — model the energy of these proven winners:\n\n${winners}\n\n${EMAIL_INSTRUCTIONS}`;
 
-  const res = await client().messages.create({
+  const draft = await createJson<EmailDraft>({
     model: MODEL,
     max_tokens: 3000,
     system: `${EMAIL_SYSTEM}\n\n${CRAFT_FRAMEWORKS}`,
     messages: [{ role: 'user', content: user }],
     output_config: { format: { type: 'json_schema', schema: EMAIL_SCHEMA } },
   } as Anthropic.MessageCreateParamsNonStreaming);
-
-  const draft = parseJson<EmailDraft>(res);
   // Silent gate: scrub the subject and body before they're shown.
   const [subject, body] = await Promise.all([
     scrubText(draft.subject),
@@ -412,14 +423,12 @@ export async function strengthenDraft(
 ): Promise<StrengthenResult> {
   const user = `VOICE:\n${req.voice}\n\nDRAFT TO STRENGTHEN:\n"""\n${req.body}\n"""\n\n${STRENGTHEN_INSTRUCTIONS}`;
 
-  const res = await client().messages.create({
+  const out = await createJson<StrengthenResult>({
     model: MODEL,
     max_tokens: 3000,
     system: STRENGTHEN_SYSTEM,
     messages: [{ role: 'user', content: user }],
     output_config: { format: { type: 'json_schema', schema: STRENGTHEN_SCHEMA } },
   } as Anthropic.MessageCreateParamsNonStreaming);
-
-  const out = parseJson<StrengthenResult>(res);
   return { ...out, body: await scrubText(out.body) };
 }
