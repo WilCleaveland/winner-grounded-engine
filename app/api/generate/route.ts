@@ -12,7 +12,8 @@ import { MOCK_RESULT } from '@/data/mockResult';
 import type { GenerateRequest } from '@/lib/types';
 
 export const runtime = 'nodejs';
-export const maxDuration = 120;
+// A heavy sales-page scrape plus the generation chain can run long; give it room.
+export const maxDuration = 180;
 
 type GenerateBody = GenerateRequest & { salesPageUrl?: string };
 
