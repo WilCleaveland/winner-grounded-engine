@@ -433,6 +433,24 @@ body {
 .strengthen-row {
   margin-top: 4px;
 }
+.strengthen-explain {
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.strengthen-explain .step {
+  color: var(--ink);
+}
+mark.edit {
+  background: rgba(240, 162, 60, 0.22);
+  color: var(--ink);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+.moves mark.edit {
+  font-size: inherit;
+}
 .moves {
   margin-top: 12px;
   border-top: 1px dashed var(--line);

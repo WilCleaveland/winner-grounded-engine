@@ -72,6 +72,71 @@ const VOICES = [
   },
 ];
 
+// The nine strengthen passes, in order — shown next to the button so the user
+// knows what the pass actually does. Mirrors STRENGTHEN_SYSTEM in lib/prompts.ts.
+const STRENGTHEN_STEPS = [
+  'Dimensionalize',
+  'Proof',
+  'Concision',
+  'Reading level',
+  'Clarity',
+  'Flow & rapport',
+  'Power words',
+  'Progressive tense',
+  'Cut qualifiers',
+];
+
+// Which words in `b` carry over from `a` unchanged (LCS). Used to highlight the
+// strengthen edits: anything NOT common is something the pass changed or added.
+function lcsCommon(a: string[], b: string[]): boolean[] {
+  const n = a.length;
+  const m = b.length;
+  const dp = Array.from({ length: n + 1 }, () => new Int32Array(m + 1));
+  for (let i = n - 1; i >= 0; i--) {
+    for (let j = m - 1; j >= 0; j--) {
+      dp[i][j] =
+        a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+    }
+  }
+  const common = new Array<boolean>(m).fill(false);
+  let i = 0;
+  let j = 0;
+  while (i < n && j < m) {
+    if (a[i] === b[j]) {
+      common[j] = true;
+      i += 1;
+      j += 1;
+    } else if (dp[i + 1][j] >= dp[i][j + 1]) {
+      i += 1;
+    } else {
+      j += 1;
+    }
+  }
+  return common;
+}
+
+// Render `next` with the words the strengthen pass changed/added highlighted.
+// Whitespace (including paragraph breaks) is preserved so <pre> formatting holds.
+function highlightEdits(prev: string, next: string) {
+  const segs = next.split(/(\s+)/);
+  const prevWords = prev.split(/\s+/).filter(Boolean);
+  const nextWords = segs.filter((s) => s.trim().length > 0);
+  const common = lcsCommon(prevWords, nextWords);
+  let wi = 0;
+  return segs.map((seg, idx) => {
+    if (seg.trim().length === 0) return seg;
+    const changed = !common[wi];
+    wi += 1;
+    return changed ? (
+      <mark className="edit" key={idx}>
+        {seg}
+      </mark>
+    ) : (
+      <span key={idx}>{seg}</span>
+    );
+  });
+}
+
 export default function Engine() {
   const [offer, setOffer] = useState('');
   const [salesPageUrl, setSalesPageUrl] = useState('');
@@ -321,7 +386,9 @@ export default function Engine() {
               <span className="email-k">Subject</span> {em.draft.subject}
             </p>
             <pre className="email-body">
-              {em.strengthen.result ? em.strengthen.result.body : em.draft.body}
+              {em.strengthen.result
+                ? highlightEdits(em.draft.body, em.strengthen.result.body)
+                : em.draft.body}
             </pre>
             <div className="strengthen-row">
               <button
@@ -335,11 +402,26 @@ export default function Engine() {
                     ? '↻ Re-run strengthen pass'
                     : 'Strengthen this draft (9-step pass)'}
               </button>
+              <p className="strengthen-explain">
+                Runs the draft through the house copy-chief checklist — nine passes
+                that sharpen the copy without touching the offer, structure, or
+                voice, and never inventing proof:{' '}
+                {STRENGTHEN_STEPS.map((s, i) => (
+                  <span key={s}>
+                    <span className="step">{s}</span>
+                    {i < STRENGTHEN_STEPS.length - 1 ? ', ' : '.'}
+                  </span>
+                ))}{' '}
+                It applies only what helps and lists the passes it used.
+              </p>
             </div>
             {em.strengthen.error && <div className="error">{em.strengthen.error}</div>}
             {em.strengthen.result && (
               <div className="moves">
-                <span className="label-inline">Strengthened — moves applied</span>
+                <span className="label-inline">
+                  Strengthened — <mark className="edit">highlighted</mark> text is
+                  what the pass changed. Moves applied:
+                </span>
                 <ul>
                   {em.strengthen.result.moves.map((m, i) => (
                     <li key={i}>{m}</li>
