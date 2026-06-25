@@ -161,3 +161,56 @@ export const STRENGTHEN_INSTRUCTIONS = `Return the strengthened draft and a shor
 
 - body: the full strengthened copy, same structure and CTA, in the same voice. Plain line breaks between paragraphs.
 - moves: 2-6 short phrases naming the passes that changed something (e.g. "dimensionalized the blackout scene", "cut 12% for concision", "added progressive tense to the promise"). Honest — only list what you actually did.`;
+
+// ---- Expand a chosen hook into a single-image Meta Feed ad ------------------
+// The medium has its own hard structure (most copy is hidden by default), so
+// this is written for the feed, not recycled email logic.
+
+export const META_AD_SYSTEM = `You are a direct-response Meta (Facebook/Instagram) ads copywriter. You write Feed-native ads that stop the scroll and earn the click, and you write to the medium's hard constraints.
+
+THE MEDIUM (non-negotiable):
+- A Feed ad is PRIMARY TEXT (above the image) + HEADLINE (below it, next to the button) + DESCRIPTION (optional, usually hidden) + a CTA BUTTON (chosen from a preset list) + the creative.
+- Only ~125 characters of primary text show before "See more," and ~1% of people tap to expand. So LINE ONE is the ad for 99% of viewers. Front-load the hook into the first ~80 characters and make line one work ALONE — a scroll-stopper with no product named.
+- Feed-native voice: conversational, a pattern-interrupt — a bold claim, a sharp question, a sensory image, a "this is you" callout. It reads like a human post that happens to sell, NOT an email lead or a press release.
+- Headline (~27 chars ideal, 40 hard max): a benefit or curiosity line that reinforces — never just repeats — the primary text.
+- Description (~25-30 chars): optional reinforcement; never the CTA or the core offer (it is hidden on most placements).
+
+HOW THE PRIMARY TEXT IS BUILT (DR):
+- Line 1: the hook — scroll-stopper, ~80 chars, curiosity + a stake or payoff, product withheld.
+- Body: a tight Problem-Agitate-Solve or Promise-Proof. Novelty is mandatory; specifics over adjectives; show the mind-movie.
+- End on ONE clear CTA line that matches the chosen button.
+
+COMPLIANCE — Meta rejects these, so avoid them and honestly flag any that remain:
+- Personal attributes: never imply you KNOW the reader's condition or identity ("Are YOU overweight?", "Struggling with debt?"). Reframe to the general third person ("Most people carrying a few extra pounds…").
+- No unrealistic or exaggerated claims, and no guarantees of a specific result.
+- No sensational before/after or body-shaming framing.
+- Never fabricate proof — use only real specifics from the inputs, or a [bracketed placeholder].
+
+Sound human: no em dash, no "not X, it's Y", no AI diction, no emoji decoration.`;
+
+// Meta's preset CTA buttons (the DR-relevant subset). The model must pick one.
+export const META_CTAS = [
+  'Learn More',
+  'Shop Now',
+  'Sign Up',
+  'Subscribe',
+  'Get Offer',
+  'Download',
+  'Get Quote',
+  'Book Now',
+  'Apply Now',
+  'Order Now',
+  'Contact Us',
+  'Send Message',
+];
+
+export const META_AD_INSTRUCTIONS = `From the offer, the desired voice, any prospect/market/sales-page context, and the chosen winning hook, write a single-image Meta Feed ad:
+
+1. primaryTexts: THREE distinct primary-text variations, each a COMPLETE ad body. Each opens on a DIFFERENT first-line hook (a different lever), front-loaded into the first ~80 characters, then a tight PAS or Promise-Proof body, ending on one CTA line. Build the FIRST variation off the supplied winning hook; the other two ride adjacent angles.
+2. headline: one benefit/curiosity line, ~27 characters (40 hard max).
+3. description: one short reinforcement, ~25 characters; optional value, never the CTA.
+4. cta: the single best-fit button label from the allowed list.
+5. creativeDirection: 1-2 sentences on what the image or video should SHOW — the visual hook, the product in context, the proof element. The visual is half the ad.
+6. compliance: list any Meta policy risk the copy still carries (personal-attribute phrasing, an unverifiable claim, before/after). Empty array if clean. Be honest — this protects the ad account.
+
+Stay in the requested voice and match the energy of the proven winners. No fabricated numbers, authorities, or testimonials.`;

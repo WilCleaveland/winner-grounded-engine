@@ -11,6 +11,9 @@ import {
   STRENGTHEN_INSTRUCTIONS,
   SALESPAGE_SYSTEM,
   SALESPAGE_INSTRUCTIONS,
+  META_AD_SYSTEM,
+  META_AD_INSTRUCTIONS,
+  META_CTAS,
 } from './prompts';
 import { PLAYBOOK_PROMPT } from './playbook';
 import { scanText } from './unslop/scan';
@@ -25,6 +28,8 @@ import type {
   StrengthenRequest,
   StrengthenResult,
   SalesPageProfile,
+  MetaAdRequest,
+  MetaAd,
 } from './types';
 
 const MODEL = 'claude-opus-4-8';
@@ -438,4 +443,62 @@ export async function strengthenDraft(
     output_config: { format: { type: 'json_schema', schema: STRENGTHEN_SCHEMA } },
   } as Anthropic.MessageCreateParamsNonStreaming);
   return { ...out, body: await scrubText(out.body) };
+}
+
+// ---- 5. Expand a chosen hook into a single-image Meta Feed ad ---------------
+
+const META_AD_SCHEMA = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    primaryTexts: { type: 'array', items: { type: 'string' } },
+    headline: { type: 'string' },
+    description: { type: 'string' },
+    cta: { type: 'string', enum: META_CTAS },
+    creativeDirection: { type: 'string' },
+    compliance: { type: 'array', items: { type: 'string' } },
+  },
+  required: [
+    'primaryTexts',
+    'headline',
+    'description',
+    'cta',
+    'creativeDirection',
+    'compliance',
+  ],
+};
+
+export async function generateMetaAd(req: MetaAdRequest): Promise<MetaAd> {
+  const winners = req.sources
+    .map((s, i) => {
+      const label = s.label?.trim() || `Winner ${i + 1}`;
+      return `WINNER ${i + 1} — ${label}\n"""\n${s.copy.trim()}\n"""`;
+    })
+    .join('\n\n');
+  const priming = [
+    salesPageContext(req.salesPage),
+    req.prospect?.trim() && `PROSPECT:\n${req.prospect.trim()}`,
+    req.market?.trim() && `MARKET:\n${req.market.trim()}`,
+  ]
+    .filter(Boolean)
+    .join('\n\n');
+
+  const user = `OFFER:\n${req.offer}\n\nVOICE:\n${req.voice}${priming ? `\n\n${priming}` : ''}\n\nTHE WINNING HOOK to build the ad from:\n"${req.hook}"\n\nVOICE REFERENCE — model the energy of these proven winners:\n\n${winners}\n\n${META_AD_INSTRUCTIONS}`;
+
+  const ad = await createJson<MetaAd>({
+    model: MODEL,
+    max_tokens: 4096,
+    system: `${META_AD_SYSTEM}\n\n${CRAFT_FRAMEWORKS}`,
+    messages: [{ role: 'user', content: user }],
+    output_config: { format: { type: 'json_schema', schema: META_AD_SCHEMA } },
+  } as Anthropic.MessageCreateParamsNonStreaming);
+
+  // Silent gate over the visible copy before it's shown (compliance + creative
+  // direction are internal notes, left as-is).
+  const [primaryTexts, headline, description] = await Promise.all([
+    Promise.all((ad.primaryTexts ?? []).map((t) => scrubText(t))),
+    scrubText(ad.headline),
+    scrubText(ad.description),
+  ]);
+  return { ...ad, primaryTexts, headline, description };
 }

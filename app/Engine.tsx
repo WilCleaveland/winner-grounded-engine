@@ -40,6 +40,24 @@ const freshStrengthen = (): StrengthenState => ({
   result: null,
 });
 
+type MetaAd = {
+  primaryTexts: string[];
+  headline: string;
+  description: string;
+  cta: string;
+  creativeDirection: string;
+  compliance: string[];
+};
+type MetaAdState = {
+  loading: boolean;
+  error: string | null;
+  ad: MetaAd | null;
+};
+
+// Meta Feed truncates primary text at ~125 chars ("See more"); headline shows
+// ~27 (40 hard max); description ~25-30 and is often hidden.
+const META = { seeMore: 125, headlineMax: 40, descMax: 30 };
+
 // The default voice draws entirely from the user's scraped sales page; the
 // presets below are only a light tweak layered on top of it.
 const SALESPAGE_VOICE = '__salespage';
@@ -151,6 +169,8 @@ export default function Engine() {
   const [ingesting, setIngesting] = useState<number | null>(null);
   // Per-hook email drafts (+ their strengthen pass), keyed by the hook text.
   const [emails, setEmails] = useState<Record<string, EmailState>>({});
+  // Per-hook Meta ad drafts, keyed by the hook text.
+  const [metaAds, setMetaAds] = useState<Record<string, MetaAdState>>({});
 
   // Persist the inputs so a refresh never wipes them — restore on mount, save on
   // every change. Loading after mount (not in the initial state) keeps the first
@@ -260,6 +280,7 @@ export default function Engine() {
     setError(null);
     setResult(null);
     setEmails({});
+    setMetaAds({});
     try {
       const res = await fetch('/api/generate', {
         method: 'POST',
@@ -317,6 +338,38 @@ export default function Engine() {
           error: err instanceof Error ? err.message : 'Could not build the email.',
           draft: null,
           strengthen: freshStrengthen(),
+        },
+      }));
+    }
+  };
+
+  const expandMetaAd = async (h: Hook) => {
+    const k = h.hook;
+    setMetaAds((m) => ({ ...m, [k]: { loading: true, error: null, ad: null } }));
+    try {
+      const res = await fetch('/api/meta-ad', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          hook: h.hook,
+          offer,
+          voice: resolveVoice(),
+          salesPage: result?.salesPage,
+          prospect: prospect.trim() || undefined,
+          market: market.trim() || undefined,
+          sources: sources.filter((s) => s.copy.trim()),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not build the Meta ad.');
+      setMetaAds((m) => ({ ...m, [k]: { loading: false, error: null, ad: data } }));
+    } catch (err) {
+      setMetaAds((m) => ({
+        ...m,
+        [k]: {
+          loading: false,
+          error: err instanceof Error ? err.message : 'Could not build the Meta ad.',
+          ad: null,
         },
       }));
     }
@@ -435,6 +488,105 @@ export default function Engine() {
     );
   };
 
+  const charNote = (len: number, max: number, ideal: number) => (
+    <span className={`charcount ${len > max ? 'over' : ''}`}>
+      {len} chars · aim ~{ideal}, max {max}
+    </span>
+  );
+
+  // Show the primary text with Meta's "See more" fold marked, so the user sees
+  // exactly what shows before the tap.
+  const primaryWithCutoff = (text: string) => {
+    if (text.length <= META.seeMore) return <span>{text}</span>;
+    return (
+      <>
+        <span>{text.slice(0, META.seeMore)}</span>
+        <span className="see-more"> … See more</span>
+        <span className="pt-folded">{text.slice(META.seeMore)}</span>
+      </>
+    );
+  };
+
+  const metaAdPanel = (h: Hook) => {
+    const ma = metaAds[h.hook];
+    return (
+      <div className="metaad-zone">
+        <button
+          className="btn-email"
+          onClick={() => expandMetaAd(h)}
+          disabled={ma?.loading}
+        >
+          {ma?.loading
+            ? 'Building the Meta ad…'
+            : ma?.ad
+              ? '↻ Rebuild Meta ad'
+              : 'Expand to a Meta ad →'}
+        </button>
+        {ma?.error && <div className="error">{ma.error}</div>}
+        {ma?.ad && (
+          <div className="metaad">
+            <div className="metaad-block">
+              <span className="label-inline">Primary text · 3 variations</span>
+              <p className="metaad-note">
+                The first ~125 chars show before &ldquo;See more&rdquo; — line one
+                has to stop the scroll on its own.
+              </p>
+              {ma.ad.primaryTexts.map((t, i) => (
+                <div className="pt-variant" key={i}>
+                  <div className="pt-head">
+                    <span className="pt-num">{i + 1}</span>
+                    <span className="charcount">{t.length} chars</span>
+                  </div>
+                  <p className="pt-body">{primaryWithCutoff(t)}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="metaad-grid">
+              <div className="metaad-field">
+                <span className="label-inline">Headline</span>
+                <p className="metaad-val">{ma.ad.headline}</p>
+                {charNote(ma.ad.headline.length, META.headlineMax, 27)}
+              </div>
+              <div className="metaad-field">
+                <span className="label-inline">Description</span>
+                <p className="metaad-val">
+                  {ma.ad.description || <span className="muted">(none)</span>}
+                </p>
+                {charNote(ma.ad.description.length, META.descMax, 25)}
+              </div>
+            </div>
+
+            <div className="metaad-row">
+              <span className="label-inline">CTA button</span>
+              <span className="cta-badge">{ma.ad.cta}</span>
+            </div>
+
+            <div className="metaad-block">
+              <span className="label-inline">Creative direction</span>
+              <p className="metaad-val">{ma.ad.creativeDirection}</p>
+            </div>
+
+            <div className="metaad-block">
+              <span className="label-inline">Meta compliance</span>
+              {ma.ad.compliance.length === 0 ? (
+                <p className="compliance-clean">
+                  No policy flags — reads clean against the common rejection rules.
+                </p>
+              ) : (
+                <ul className="compliance-flags">
+                  {ma.ad.compliance.map((c, i) => (
+                    <li key={i}>{c}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const hookCard = (h: Hook, key: number) => (
     <div className="hookcard" key={key}>
       <p className="hookline">{h.hook}</p>
@@ -459,6 +611,7 @@ export default function Engine() {
         </div>
       )}
       {emailPanel(h)}
+      {metaAdPanel(h)}
     </div>
   );
 

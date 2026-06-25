@@ -395,6 +395,116 @@ body {
   opacity: 0.6;
   cursor: default;
 }
+.metaad-zone {
+  border-top: 1px dashed var(--line);
+  margin-top: 14px;
+  padding-top: 14px;
+}
+.metaad {
+  margin-top: 14px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+.metaad-block {
+  margin-bottom: 16px;
+}
+.metaad-block:last-child {
+  margin-bottom: 0;
+}
+.metaad-note {
+  margin: 6px 0 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.pt-variant {
+  border-left: 2px solid var(--line);
+  padding: 4px 0 4px 12px;
+  margin-bottom: 10px;
+}
+.pt-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.pt-num {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+.pt-body {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink);
+  white-space: pre-wrap;
+}
+.pt-folded {
+  color: var(--faint);
+}
+.see-more {
+  color: var(--accent);
+  font-size: 12px;
+}
+.charcount {
+  font-size: 11px;
+  color: var(--faint);
+}
+.charcount.over {
+  color: var(--cut);
+}
+.metaad-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.metaad-val {
+  margin: 4px 0;
+  font-size: 14px;
+  color: var(--ink);
+}
+.metaad-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.cta-badge {
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: var(--radius);
+}
+.compliance-clean {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--good);
+}
+.compliance-flags {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+.compliance-flags li {
+  font-size: 13px;
+  color: var(--cut);
+  margin-bottom: 4px;
+}
+.muted {
+  color: var(--faint);
+}
 .emaildraft {
   margin-top: 14px;
   background: var(--panel-2);

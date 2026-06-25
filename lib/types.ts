@@ -93,3 +93,23 @@ export type StrengthenResult = {
   body: string;
   moves: string[]; // the passes that actually changed something
 };
+
+// Expand a chosen hook into a single-image Meta (Facebook/Instagram) Feed ad.
+export type MetaAdRequest = {
+  hook: string;
+  offer: string;
+  voice: string;
+  sources: { label: string; copy: string }[];
+  prospect?: string;
+  market?: string;
+  salesPage?: SalesPageProfile;
+};
+
+export type MetaAd = {
+  primaryTexts: string[]; // 3 variations; first line is the scroll-stopper
+  headline: string; // benefit line under the creative (~27 ideal, 40 max)
+  description: string; // optional reinforcement (~25-30), often hidden
+  cta: string; // one of Meta's preset button labels
+  creativeDirection: string; // what the image/video should show
+  compliance: string[]; // Meta policy risks the copy still carries; [] if clean
+};
