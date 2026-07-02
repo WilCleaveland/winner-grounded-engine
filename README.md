@@ -55,6 +55,16 @@ So this isn't a generic generator. The mechanism-extraction step and the adversa
 
 For an ROI-obsessed affiliate shop, that turns every dollar of spend into a lesson the creative engine keeps. It's the natural payoff of starting from winners: first you ground creative in proven winners, then you let live performance decide what "proven" means.
 
+## The case for hiring me
+
+Your role page says the point of this hire is someone who learns the business and starts seeing opportunities you haven't articulated yet. My head start: I already run the motion you're hiring into. My day job is a live email/SMS list operation. Daily sends into cold-built lists. Campaign profit reconciled by sub-id back to the CRM every morning. Suppression, restore, and tagging runs against live customer data, always behind a dry-run gate, because I know exactly what one bad list op costs.
+
+Every piece of this tool is that operation, productized. The mechanism teardown is how I brief a send. The stress test is the skeptic pass I run before money goes behind a hook. Never-falsify is wired into every prompt because invented proof is how ad accounts and sender reputations die. And the response-learning loop under "what's next" is already my weekly ritual, run by hand: results come in, every campaign gets a winner or loser verdict, the verdicts update a house playbook, and the playbook shapes the next batch. I'm not proposing a loop I hope works. I'm proposing to automate one I already operate.
+
+The build itself is the deployment-proficiency demo: shipped solo in days with Claude Code, structured outputs so the model's JSON never breaks the app, a hardened service on my own box behind a reverse proxy, per-IP rate limits so a public demo can't drain my API keys, and extraction passes that return an empty field instead of a guess. One more thing worth noticing: the three builds on your role page (video creative generator, automated ad workflow, landing page CMS) all share this app's shape, generation grounded in something real with a verification gate before anything ships. That's not an accident of my tool. It's the pattern that makes AI tools survive contact with real spend, and it's the pattern I'd bring to all three.
+
+Marketing judgment and shipped production tools, from one person who needs zero ramp on what a media-buying team actually does with its day. That's the case.
+
 ## How it works
 
 - **Next.js** (App Router) + **Claude** (`claude-opus-4-8`) with **structured outputs**, so the JSON the model returns is schema-valid every time.
