@@ -31,3 +31,6 @@ HANDOFF.md
 
 # next generates this on every build — do not track
 next-env.d.ts
+
+# tsc incremental cache — build-generated, do not track
+*.tsbuildinfo

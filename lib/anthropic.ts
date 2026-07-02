@@ -11,6 +11,10 @@ import {
   STRENGTHEN_INSTRUCTIONS,
   SALESPAGE_SYSTEM,
   SALESPAGE_INSTRUCTIONS,
+  AD_LIBRARY_SYSTEM,
+  AD_LIBRARY_INSTRUCTIONS,
+  VSL_SYSTEM,
+  VSL_INSTRUCTIONS,
   META_AD_SYSTEM,
   META_AD_INSTRUCTIONS,
   META_CTAS,
@@ -28,9 +32,12 @@ import type {
   StrengthenRequest,
   StrengthenResult,
   SalesPageProfile,
+  PulledAd,
+  VslWinner,
   MetaAdRequest,
   MetaAd,
 } from './types';
+import type { ScrapedLibrary } from './adlibrary';
 
 const MODEL = 'claude-opus-4-8';
 
@@ -116,6 +123,81 @@ function salesPageContext(page: SalesPageProfile | undefined): string {
     ? `\n\nPROOF/SPECIFICS ACTUALLY ON THE PAGE (you MAY reuse these real specifics; invent NOTHING beyond them):\n${page.proofOnPage.map((p) => `- ${p}`).join('\n')}`
     : '\n\n(The page states no hard proof — so use NO invented numbers, authorities, or testimonials.)';
   return `THE PRODUCT (from the brand's own sales page — ground every hook in this real offer):\n${page.product}${proof}`;
+}
+
+// ---- 0b. Pull competitor ads out of a scraped Ad Library page --------------
+// Pure extraction: turn the noisy scraped markdown into distinct, structured
+// ads the user can load as source winners. Never-falsify is absolute here — the
+// prompt is a transcriber, so a missing field comes back "" rather than invented.
+
+const AD_LIBRARY_SCHEMA = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    ads: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          id: { type: 'string' },
+          primaryText: { type: 'string' },
+          headline: { type: 'string' },
+          cta: { type: 'string' },
+          startedRunning: { type: 'string' },
+          destination: { type: 'string' },
+        },
+        required: ['id', 'primaryText', 'headline', 'cta', 'startedRunning', 'destination'],
+      },
+    },
+  },
+  required: ['ads'],
+};
+
+export async function extractAdsFromLibrary(
+  lib: ScrapedLibrary,
+): Promise<PulledAd[]> {
+  const user = `ADVERTISER SEARCHED: ${lib.advertiser}\nSOURCE: ${lib.url}\n\nSCRAPED AD LIBRARY PAGE:\n"""\n${lib.markdown}\n"""\n\n${AD_LIBRARY_INSTRUCTIONS}`;
+
+  const out = await createJson<{ ads: PulledAd[] }>({
+    model: MODEL,
+    max_tokens: 6144,
+    system: AD_LIBRARY_SYSTEM,
+    messages: [{ role: 'user', content: user }],
+    output_config: { format: { type: 'json_schema', schema: AD_LIBRARY_SCHEMA } },
+  } as Anthropic.MessageCreateParamsNonStreaming);
+
+  // Keep only ads with real body copy — image/video-only ads are dead weight as
+  // text winners, and the prompt is told to drop them, but guard here too.
+  return out.ads.filter((a) => a.primaryText.trim().length > 0);
+}
+
+// ---- 0c. Model a VSL / video sales page as a source winner -----------------
+// Scrape → pull the spoken hook + persuasion beats as source copy. Honest about
+// whether it found a real transcript or worked from the page's written copy.
+
+const VSL_SCHEMA = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    transcriptFound: { type: 'boolean' },
+    label: { type: 'string' },
+    copy: { type: 'string' },
+    note: { type: 'string' },
+  },
+  required: ['transcriptFound', 'label', 'copy', 'note'],
+};
+
+export async function extractVslWinner(page: ScrapedPage): Promise<VslWinner> {
+  const user = `VSL / SALES PAGE — ${page.title}\nURL: ${page.url}\n"""\n${page.markdown}\n"""\n\n${VSL_INSTRUCTIONS}`;
+
+  return createJson<VslWinner>({
+    model: MODEL,
+    max_tokens: 4096,
+    system: VSL_SYSTEM,
+    messages: [{ role: 'user', content: user }],
+    output_config: { format: { type: 'json_schema', schema: VSL_SCHEMA } },
+  } as Anthropic.MessageCreateParamsNonStreaming);
 }
 
 // ---- 1. Extract mechanisms + generate hooks -------------------------------

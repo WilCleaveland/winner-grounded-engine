@@ -54,6 +54,27 @@ type MetaAdState = {
   ad: MetaAd | null;
 };
 
+// A competitor ad pulled from the Meta Ad Library, ready to load as a winner.
+type PulledAd = {
+  id: string;
+  primaryText: string;
+  headline: string;
+  cta: string;
+  startedRunning: string;
+  destination: string;
+};
+type AdLibState = {
+  loading: boolean;
+  error: string | null;
+  advertiser: string;
+  ads: PulledAd[];
+};
+type VslState = {
+  loading: boolean;
+  error: string | null;
+  note: string | null;
+};
+
 // Meta Feed truncates primary text at ~125 chars ("See more"); headline shows
 // ~27 (40 hard max); description ~25-30 and is often hidden.
 const META = { seeMore: 125, headlineMax: 40, descMax: 30 };
@@ -167,6 +188,19 @@ export default function Engine() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<Result | null>(null);
   const [ingesting, setIngesting] = useState<number | null>(null);
+  // Which copy-button was just clicked (its key), for the "Copied ✓" flash.
+  const [copied, setCopied] = useState<string | null>(null);
+  // Auto-source a winner: Meta Ad Library pull + VSL / sales-page pull.
+  const [adQuery, setAdQuery] = useState('');
+  const [adLib, setAdLib] = useState<AdLibState>({
+    loading: false,
+    error: null,
+    advertiser: '',
+    ads: [],
+  });
+  const [loadedAdIds, setLoadedAdIds] = useState<string[]>([]);
+  const [vslUrl, setVslUrl] = useState('');
+  const [vsl, setVsl] = useState<VslState>({ loading: false, error: null, note: null });
   // Per-hook email drafts (+ their strengthen pass), keyed by the hook text.
   const [emails, setEmails] = useState<Record<string, EmailState>>({});
   // Per-hook Meta ad drafts, keyed by the hook text.
@@ -272,6 +306,124 @@ export default function Engine() {
       setError(e instanceof Error ? e.message : 'Could not read the image.');
     } finally {
       setIngesting(null);
+    }
+  };
+
+  // Drop an auto-sourced winner into the first empty slot, or append a new one
+  // (up to the 3-winner cap). Returns false when the winners are already full.
+  // The placement decision reads the current `sources` (this render's value) so
+  // the caller gets a synchronous answer — a flag mutated inside the setState
+  // updater would still be stale when we returned it.
+  const loadWinner = (label: string, copy: string): boolean => {
+    const emptyAt = sources.findIndex((x) => !x.copy.trim());
+    if (emptyAt >= 0) {
+      setSources((s) => s.map((x, j) => (j === emptyAt ? { label, copy } : x)));
+      return true;
+    }
+    if (sources.length < 3) {
+      setSources((s) => [...s, { label, copy }]);
+      return true;
+    }
+    return false; // full
+  };
+
+  // Fold a pulled ad's fields into one source-copy block, so the mechanism
+  // engine sees the headline + CTA + destination as context, not just the body.
+  const adToCopy = (ad: PulledAd): string => {
+    const bits = [ad.primaryText.trim()];
+    if (ad.headline.trim()) bits.push(`Headline: ${ad.headline.trim()}`);
+    if (ad.cta.trim()) bits.push(`CTA button: ${ad.cta.trim()}`);
+    if (ad.destination.trim()) bits.push(`Destination: ${ad.destination.trim()}`);
+    return bits.join('\n');
+  };
+
+  const adLabel = (ad: PulledAd) =>
+    `${adLib.advertiser} — live ad${ad.startedRunning ? ` (since ${ad.startedRunning})` : ''}`;
+
+  const useAd = (ad: PulledAd) => {
+    const ok = loadWinner(adLabel(ad), adToCopy(ad));
+    if (!ok) {
+      setError('Your 3 winner slots are full — remove one to load another.');
+      return;
+    }
+    setLoadedAdIds((ids) => (ids.includes(ad.id) ? ids : [...ids, ad.id]));
+  };
+
+  // One click: load the advertiser's top ads (by impressions) into the winner
+  // slots and jump to Generate. Fills empty slots, then appends to the 3-cap —
+  // computed in one pass off the current sources (loadWinner in a loop would
+  // read a stale emptyAt for the second and third ad).
+  const useTopAds = () => {
+    const next = sources.slice();
+    const added: string[] = [];
+    for (const ad of adLib.ads.filter((a) => !loadedAdIds.includes(a.id))) {
+      const emptyAt = next.findIndex((x) => !x.copy.trim());
+      if (emptyAt >= 0) next[emptyAt] = { label: adLabel(ad), copy: adToCopy(ad) };
+      else if (next.length < 3) next.push({ label: adLabel(ad), copy: adToCopy(ad) });
+      else break;
+      added.push(ad.id);
+    }
+    if (added.length === 0) {
+      setError('Your 3 winner slots are full — remove one to load another.');
+      return;
+    }
+    setSources(next);
+    setLoadedAdIds((ids) => [...ids, ...added]);
+    document.querySelector('.generate-row')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  const pullAdLibrary = async () => {
+    const query = adQuery.trim();
+    if (!query) return;
+    setAdLib({ loading: true, error: null, advertiser: '', ads: [] });
+    setLoadedAdIds([]);
+    try {
+      const res = await fetch('/api/ad-library', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ query }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not pull the ads.');
+      setAdLib({ loading: false, error: null, advertiser: data.advertiser, ads: data.ads });
+    } catch (e) {
+      setAdLib({
+        loading: false,
+        error: e instanceof Error ? e.message : 'Could not pull the ads.',
+        advertiser: '',
+        ads: [],
+      });
+    }
+  };
+
+  const pullVsl = async () => {
+    const url = vslUrl.trim();
+    if (!url) return;
+    setVsl({ loading: true, error: null, note: null });
+    try {
+      const res = await fetch('/api/vsl', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ url }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not read that VSL page.');
+      const ok = loadWinner(data.label || 'VSL winner', data.copy);
+      if (!ok) {
+        setVsl({
+          loading: false,
+          error: 'Your 3 winner slots are full — remove one to load the VSL.',
+          note: null,
+        });
+        return;
+      }
+      setVsl({ loading: false, error: null, note: data.note || 'Loaded into a winner slot.' });
+    } catch (e) {
+      setVsl({
+        loading: false,
+        error: e instanceof Error ? e.message : 'Could not read that VSL page.',
+        note: null,
+      });
     }
   };
 
@@ -413,6 +565,33 @@ export default function Engine() {
     }
   };
 
+  // A small "Copy" action for any output the user will paste into an ESP or
+  // Ads Manager. Keyed so only the clicked button flashes "Copied ✓".
+  const copyBtn = (key: string, text: string) => (
+    <button
+      className="btn-copy"
+      onClick={async () => {
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch {
+          // Clipboard API needs focus/permission; fall back to the old way.
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          ta.remove();
+        }
+        setCopied(key);
+        setTimeout(() => setCopied((c) => (c === key ? null : c)), 1500);
+      }}
+    >
+      {copied === key ? 'Copied ✓' : 'Copy'}
+    </button>
+  );
+
   const emailPanel = (h: Hook) => {
     const em = emails[h.hook];
     return (
@@ -434,6 +613,10 @@ export default function Engine() {
             <div className="email-skeleton">
               <span className="tag">{em.draft.skeleton}</span>
               <span className="label-inline">skeleton</span>
+              {copyBtn(
+                `email:${h.hook}`,
+                `Subject: ${em.draft.subject}\n\n${em.strengthen.result?.body ?? em.draft.body}`,
+              )}
             </div>
             <p className="email-subject">
               <span className="email-k">Subject</span> {em.draft.subject}
@@ -536,6 +719,7 @@ export default function Engine() {
                   <div className="pt-head">
                     <span className="pt-num">{i + 1}</span>
                     <span className="charcount">{t.length} chars</span>
+                    {copyBtn(`pt:${h.hook}:${i}`, t)}
                   </div>
                   <p className="pt-body">{primaryWithCutoff(t)}</p>
                 </div>
@@ -589,7 +773,10 @@ export default function Engine() {
 
   const hookCard = (h: Hook, key: number) => (
     <div className="hookcard" key={key}>
-      <p className="hookline">{h.hook}</p>
+      <div className="hookline-row">
+        <p className="hookline">{h.hook}</p>
+        {copyBtn(`hook:${h.hook}`, h.hook)}
+      </div>
       <div className="meta">
         <span className="tag">{h.mechanism}</span>
       </div>
@@ -721,10 +908,117 @@ export default function Engine() {
         )}
       </div>
 
+      {/* Auto-source a winner — pull one instead of pasting it */}
+      <div className="field autosource">
+        <label className="label">
+          Source a winner automatically{' '}
+          <span className="opt">optional — or just paste one below</span>
+        </label>
+
+        {/* Meta Ad Library — pull a competitor's live ads */}
+        <div className="tool">
+          <div className="tool-head">
+            <span className="tool-title">Pull a competitor&rsquo;s live ads</span>
+            <span className="tool-sub">
+              Meta Ad Library — their currently-running Feed ads, by brand name
+            </span>
+          </div>
+          <div className="tool-row">
+            <input
+              className="input"
+              value={adQuery}
+              placeholder="Competitor / brand, e.g. Ridge Wallet"
+              onChange={(e) => setAdQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !adLib.loading) pullAdLibrary();
+              }}
+            />
+            <button
+              className="btn"
+              onClick={pullAdLibrary}
+              disabled={adLib.loading || !adQuery.trim()}
+            >
+              {adLib.loading ? 'Pulling…' : 'Pull live ads'}
+            </button>
+          </div>
+          {adLib.loading && (
+            <p className="fieldnote">
+              Rendering the Ad Library and reading the running ads (~20-40s)…
+            </p>
+          )}
+          {adLib.error && <div className="error">{adLib.error}</div>}
+          {adLib.ads.length > 0 && (
+            <div className="pulled-ads">
+              <div className="pulled-ads-head">
+                <p className="fieldnote">
+                  {adLib.ads.length} running ad{adLib.ads.length === 1 ? '' : 's'} for{' '}
+                  <strong>{adLib.advertiser}</strong>, most-shown first. Load any as a
+                  winner:
+                </p>
+                <button className="btn" onClick={useTopAds}>
+                  Use top {Math.min(3, adLib.ads.length)} →
+                </button>
+              </div>
+              {adLib.ads.map((ad) => {
+                const added = loadedAdIds.includes(ad.id);
+                return (
+                  <div className="pulled-ad" key={ad.id || ad.primaryText.slice(0, 24)}>
+                    <p className="pulled-ad-copy">{ad.primaryText}</p>
+                    <div className="pulled-ad-meta">
+                      {ad.headline && <span className="pa-headline">{ad.headline}</span>}
+                      {ad.cta && <span className="pa-cta">{ad.cta}</span>}
+                      {ad.startedRunning && (
+                        <span className="pa-date">since {ad.startedRunning}</span>
+                      )}
+                      <button
+                        className="btn-link"
+                        onClick={() => useAd(ad)}
+                        disabled={added}
+                      >
+                        {added ? 'Added ✓' : 'Use as winner →'}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* VSL / video sales page — model the spoken hook */}
+        <div className="tool">
+          <div className="tool-head">
+            <span className="tool-title">Model a VSL / video sales page</span>
+            <span className="tool-sub">
+              Pulls the spoken hook and persuasion beats off the page
+            </span>
+          </div>
+          <div className="tool-row">
+            <input
+              className="input"
+              value={vslUrl}
+              placeholder="https://… a video sales letter or long-form sales page"
+              onChange={(e) => setVslUrl(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !vsl.loading) pullVsl();
+              }}
+            />
+            <button className="btn" onClick={pullVsl} disabled={vsl.loading || !vslUrl.trim()}>
+              {vsl.loading ? 'Reading…' : 'Pull the hook'}
+            </button>
+          </div>
+          {vsl.loading && (
+            <p className="fieldnote">Reading the page and pulling the script (~20-40s)…</p>
+          )}
+          {vsl.error && <div className="error">{vsl.error}</div>}
+          {vsl.note && <p className="fieldnote vsl-note">Loaded a winner. {vsl.note}</p>}
+        </div>
+      </div>
+
       {/* Sources */}
       <div className="field">
         <div className="srchead">
-          <label className="label">Proven winners — paste copy that converted</label>
+          <label className="label">Proven winners — paste, or load from above</label>
         </div>
 
         {sources.map((s, i) => (

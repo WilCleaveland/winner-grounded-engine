@@ -575,3 +575,137 @@ mark.edit {
   color: var(--muted);
   margin-bottom: 4px;
 }
+
+/* Auto-source a winner — Ad Library pull + VSL pull */
+.autosource {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+.tool {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+  margin-top: 12px;
+}
+.tool:first-of-type {
+  border-top: none;
+  padding-top: 4px;
+  margin-top: 8px;
+}
+.tool-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+.tool-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.tool-sub {
+  font-size: 12px;
+  color: var(--faint);
+}
+.tool-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.tool-row .input {
+  background: var(--panel-2);
+  flex: 1;
+}
+.tool-row .btn {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.pulled-ads {
+  margin-top: 10px;
+}
+.pulled-ad {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 8px;
+}
+.pulled-ad-copy {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink);
+  white-space: pre-wrap;
+}
+.pulled-ad-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.pa-headline {
+  font-weight: 600;
+  color: var(--ink);
+}
+.pa-cta {
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 1px 7px;
+  color: var(--accent);
+}
+.pa-date {
+  color: var(--faint);
+}
+.pulled-ad-meta .btn-link {
+  margin-left: auto;
+  color: var(--accent);
+}
+.pulled-ad-meta .btn-link:disabled {
+  color: var(--good);
+  cursor: default;
+}
+.vsl-note {
+  color: var(--good);
+}
+
+/* Copy-to-clipboard actions + the "use top ads" row */
+.hookline-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.hookline-row .hookline {
+  flex: 1;
+}
+.btn-copy {
+  font: inherit;
+  font-size: 11.5px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: none;
+  color: var(--faint);
+  padding: 2px 9px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.btn-copy:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.email-skeleton .btn-copy,
+.pt-head .btn-copy {
+  margin-left: auto;
+}
+.pulled-ads-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pulled-ads-head .fieldnote {
+  flex: 1;
+  margin-top: 0;
+}

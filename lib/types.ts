@@ -105,6 +105,44 @@ export type MetaAdRequest = {
   salesPage?: SalesPageProfile;
 };
 
+// ---- Input source: pull a competitor's live ads from the Meta Ad Library ----
+// Type an advertiser, scrape their currently-running Feed ads, and load any of
+// them as a proven winner. The Ad Library only lists ads a competitor is
+// actually spending on, so "live" is a real signal — the dream input for a
+// media buyer.
+export type AdLibraryRequest = {
+  query: string; // the advertiser / brand to search
+  country?: string; // ISO-2, defaults to US
+};
+
+export type PulledAd = {
+  id: string; // Meta Library ID
+  primaryText: string; // the ad body copy (above the creative)
+  headline: string; // the headline under the creative ("" if none)
+  cta: string; // the button label ("" if none)
+  startedRunning: string; // when it started running ("" if not shown)
+  destination: string; // the landing domain/URL ("" if none)
+};
+
+export type AdLibraryResponse = {
+  advertiser: string; // the advertiser label the search resolved to
+  ads: PulledAd[];
+};
+
+// ---- Input source: model a VSL / video sales page --------------------------
+// Scrape a competitor's video-sales-letter page and pull the spoken hook +
+// persuasion beats as a source winner. DR VSL pages almost always print the
+// script on-page (SEO + skimmers), so the transcript is usually recoverable;
+// when it isn't, we distill from the page's written sales copy and say so.
+export type VslRequest = { url: string };
+
+export type VslWinner = {
+  label: string; // short human label, e.g. "BeamDreams VSL — sleep hook"
+  copy: string; // the VSL hook + key persuasion beats, as source copy
+  transcriptFound: boolean; // true = pulled an actual video script off the page
+  note: string; // one line on what was pulled (transcript vs page copy)
+};
+
 export type MetaAd = {
   primaryTexts: string[]; // 3 variations; first line is the scroll-stopper
   headline: string; // benefit line under the creative (~27 ideal, 40 max)
